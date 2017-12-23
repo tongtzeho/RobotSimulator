@@ -5,6 +5,7 @@
 class Robot : public CE::Actor<>
 {
 protected:
+	CE::Material shadowMaterial;
 	float velocity;
 	float angularVelocity;
 	Robot(const float velocity_, const float angularVelocity_, const std::vector<std::string> &resourceList, const std::unordered_map<std::string, std::string> &animResourceMap, const Transform &transform = Transform(), CE::Script **const scr = NULL);

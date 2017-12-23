@@ -9,9 +9,9 @@ RobotSimulatorScene::RobotSimulatorScene() : Scene() {}
 void RobotSimulatorScene::Start(void *const param)
 {
 	Scene::Start();
-	Camera *overLookCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.7071f, 0, 0, 0.707101f), Vector3(0, 890, 0)), NULL, Vector3(0, 0, 1), Vector3(0, 1, 0), 0.25f*Pi, 10.0f, 3000.0f);
+	Camera *overLookCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.7071f, 0, 0, 0.707101f), Vector3(0, 890, 0)), NULL, Vector3(0, 0, 1), Vector3(0, 1, 0), false, 1.02f, 10.0f, 3000.0f);
 	AddGameObject(overLookCamera);
-	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 500, -360)), NULL, Vector3(0, 0, 1), Vector3(0, 1, 0), 0.333333333f*Pi, 1.0f, 3000.0f);
+	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 500, -360)), NULL, Vector3(0, 0, 1), Vector3(0, 1, 0), true, 0.333333333f*Pi, 1.0f, 3000.0f);
 	freeCamera->AddScript(new PythonScript("freeCamera"), false);
 	AddGameObject(freeCamera);
 	char pyScriptParam[64] = { 0 };
@@ -23,7 +23,8 @@ void RobotSimulatorScene::Start(void *const param)
 	epuck->AddScript(new PythonScript("kbdControl"), false);
 	AddGameObject(epuck);
 	lights.push_back(Light());
-	lights[0].SetPointLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0xd8d8d8ff), Vector3(0, 2000, 0), 3000.0f, Vector3(1, 0.7f, 0.5f));
+	lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0xd8d8d8ff), Vector3(0.707106781187f, -0.707106781187f, 0), Vector3(0, 0, 0), 600);
+	//lights[0].SetSpotLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0xd8d8d8ff), Vector3(0, 600, 0), 1300, Vector3(0, -1, 0.01f), 8.0f, Vector3(1, 0.01f, 0));
 }
 
 RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngineGame(hInstance)

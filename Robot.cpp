@@ -1,9 +1,15 @@
 #include "Robot.h"
 
 using namespace CE;
+using namespace DirectX;
 
 Robot::Robot(const float velocity_, const float angularVelocity_, const std::vector<std::string> &resourceList, const std::unordered_map<std::string, std::string> &animResourceMap, const Transform &transform, CE::Script **const scr)
-	: velocity(velocity_), angularVelocity(angularVelocity_), Actor<>(resourceList, animResourceMap, "idle", transform, scr) {}
+	: velocity(velocity_), angularVelocity(angularVelocity_), Actor<>(resourceList, animResourceMap, "idle", transform, scr)
+{
+	shadowMaterial.ambient.w = 1;
+	shadowMaterial.diffuse.w = 0.3f;
+	shadowMaterial.specular.w = 16;
+}
 
 unsigned Robot::FixedUpdateScripts(const float dt, void *const param)
 {
