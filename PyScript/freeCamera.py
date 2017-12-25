@@ -3,7 +3,7 @@ import math
 
 class freeCamera:
 	def start(self, sObj, param = None):
-		self.speed = 360.0
+		self.speed = 36.0
 		self.angleSpeedX = 256.0
 		self.angleSpeedY = 144.0
 		self.camera = ce.gameObject(sObj)
