@@ -69,4 +69,4 @@ void Robot::Turn(const bool left, const float dt)
 }
 
 EPuck::EPuck(const CE::Quaternion &quaternion, const CE::Vector3 &translation)
-	: Robot(50.0f, 1.0f, { "@epuck.skn:M", "@epuck.dds", "@epuck.lua:Material", "@epuck.skn", "@epuck.skl" }, { { "idle", "@epuck_idle.anm" },{ "move", "@epuck_move.anm" },{ "dance", "@epuck_dance.anm" } }, Transform(Vector3(0.5f, 0.5f, 0.5f), quaternion, translation)) {}
+	: Robot(10.0f, 1.0f, { "@epuck.skn:M", "@epuck.dds", "@epuck.lua:Material", "@epuck.skn", "@epuck.skl" }, { { "idle", "@epuck_idle.anm" },{ "move", "@epuck_move.anm" },{ "dance", "@epuck_dance.anm" } }, Transform(Vector3(0.05f, 0.05f, 0.05f), quaternion, translation)) {}
