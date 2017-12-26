@@ -6,6 +6,10 @@ cbuffer cbPerFrame
 cbuffer cbPerObject
 {
 	float4x4 gRect;
+	float gDepthSensorFar;
+	float gNear;
+	float gFar;
+	bool gIsPerspective;
 };
 
 Texture2D gDepthMap;
@@ -40,10 +44,16 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-	float r = gDepthMap.Sample(gTriLinearSam, pin.Tex).r;
-	
-	// draw as grayscale
-	return float4(r, r, r, 1);
+	if (gIsPerspective)
+	{
+		float r = clamp(((gNear * gFar - gNear) * gFar) / ((gFar - gDepthMap.Sample(gTriLinearSam, pin.Tex).r * (gFar - gNear)) * (gFar - gNear) * gDepthSensorFar), 0, 1);
+		return float4(r, r, 0, 1);
+	}
+	else
+	{
+		float r = clamp(gDepthMap.Sample(gTriLinearSam, pin.Tex).r * gFar / gDepthSensorFar, 0, 1);
+		return float4(r, r, 0, 1);
+	}
 }
  
 technique11 DepthMapTech
