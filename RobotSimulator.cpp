@@ -3,6 +3,7 @@
 #include "DepthMapEffect.h"
 #include "GUICameraView.h"
 #include "CameraSensor.h"
+#include "Wall.h"
 #include "../Engine/Render/WICTextureLoader.h"
 
 using namespace CE;
@@ -15,7 +16,7 @@ void RobotSimulatorScene::Start(void *const param)
 	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 60, -50)), NULL, true, 1.0f, 10000.0f, 0.333333333f*Pi);
 	freeCamera->AddScript(new PythonScript("freeCamera"), false);
 	AddGameObject(freeCamera);
-	CameraSensor *overLookCamera = new CameraSensor(640, 360, Transform(Vector3(1, 1, 1), Quaternion(0.7071f, 0, 0, 0.707101f), Vector3(0, 10, 0)), NULL, false, 0.5f, 13.0f, 130.0f);
+	CameraSensor *overLookCamera = new CameraSensor(640, 360, Transform(Vector3(1, 1, 1), Quaternion(0.7071f, 0, 0, 0.707101f), Vector3(0, 9.9f, 0)), NULL, false, 0.0f, 10.0f, 128.0f, 10.0f);
 	overLookCamera->SetRenderShadow(false);
 	AddGameObject(overLookCamera);
 	Drawable<> *floor = new Drawable<>({ "@floor.lua:Mesh", "@floor.dds", "@floor.lua:Material" });
@@ -29,7 +30,7 @@ void RobotSimulatorScene::Start(void *const param)
 	platform->SetCastShadow(false);
 	platform->SetReceiveShadow(false);
 	AddGameObject(platform);
-	EPuck *epuck = new EPuck(Quaternion(), Vector3(50, 0, 0));
+	EPuck *epuck = new EPuck(Quaternion(0, 1, 0, 1), Vector3(-50, 0, 0));
 	epuck->AddScript(new PythonScript("kbdControl"), false);
 	AddGameObject(epuck);
 	lights.push_back(Light());
@@ -37,9 +38,38 @@ void RobotSimulatorScene::Start(void *const param)
 	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(0, 0, 0, 0, 8, 5, 0.35f, 0.35f, 0, 0xC));
 	cameraInfo->AddScript(new PythonScript("cameraInfo"), false);
 	AddGUIObject(cameraInfo);
-	GUICameraView *shadowMap = new GUICameraView(1, GUITransform(1, 1, 1, 1, 0, 0, 400, 225, 0, 0xF));
-	shadowMap->SetTexture(overLookCamera->GetDrawableTexture()->GetColorTexture(), false);
-	AddGUIObject(shadowMap);
+	GUIText *fpsInfo = new GUIText("FPS = 0", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(1, 0, 1, 0, -6, 5, 0.35f, 0.35f, 0, 0xC));
+	fpsInfo->AddScript(new PythonScript("fpsInfo"), false);
+	AddGUIObject(fpsInfo);
+	GUICameraView *overLookMap = new GUICameraView(1, GUITransform(1, 1, 1, 1, 0, 0, 400, 225, 0, 0xF));
+	overLookMap->SetCameraSensor(overLookCamera, false);
+	AddGUIObject(overLookMap);
+	GUICameraView *robotViewColorMap = new GUICameraView(1, GUITransform(0, 1, 0, 1, 0, -212, 280, 210, 0, 0xF));
+	robotViewColorMap->SetCameraSensor(epuck->GetCameraSensor(), false);
+	AddGUIObject(robotViewColorMap);
+	GUICameraView *robotViewDepthMap = new GUICameraView(1, GUITransform(0, 1, 0, 1, 0, 0, 280, 210, 0, 0xF));
+	robotViewDepthMap->SetCameraSensor(epuck->GetCameraSensor(), true);
+	AddGUIObject(robotViewDepthMap);
+	EPuck *epuck2 = new EPuck(Quaternion(0, 1, 0, -1), Vector3(50, 0, 0));
+	AddGameObject(epuck2);
+	EPuck *epuck3 = new EPuck(Quaternion(0 ,0, 0, 1), Vector3(0, 0, -30));
+	AddGameObject(epuck3);
+	EPuck *epuck4 = new EPuck(Quaternion(0, 1, 0, 0), Vector3(0, 0, 30));
+	AddGameObject(epuck4);
+	EPuck *epuck5 = new EPuck(Quaternion(0, 0, 0, 1), Vector3(0, 0, 0));
+	AddGameObject(epuck5);
+	GUIImage *leftBottomPanel = new GUIImage("@brown.png", 0, GUITransform(0, 1, 0, 1, 0, 0, 282, 424, 0, 0xF));
+	AddGUIObject(leftBottomPanel);
+	GUIImage *rightBottomPanel = new GUIImage("@brown.png", 0, GUITransform(1, 1, 1, 1, 0, 0, 402, 227, 0, 0xF));
+	AddGUIObject(rightBottomPanel);
+	AddGameObject(new Wall("@yellow.png", -10.0f, -10.0f, -10.0f, -25.0f));
+	AddGameObject(new Wall("@yellow.png", -10.0f, -10.0f, -50.0f, -10.0f));
+	AddGameObject(new Wall("@blue.png", -10.0f, 10.0f, -10.0f, 25.0f));
+	AddGameObject(new Wall("@blue.png", -10.0f, 10.0f, -50.0f, 10.0f));
+	AddGameObject(new Wall("@blue.png", 10.0f, -10.0f, 10.0f, -25.0f));
+	AddGameObject(new Wall("@blue.png", 10.0f, -10.0f, 50.0f, -10.0f));
+	AddGameObject(new Wall("@yellow.png", 10.0f, 10.0f, 10.0f, 25.0f));
+	AddGameObject(new Wall("@yellow.png", 10.0f, 10.0f, 50.0f, 10.0f));
 }
 
 void RobotSimulatorScene::PreRender(void *const param)
@@ -101,7 +131,7 @@ void RobotSimulatorScene::Draw(void *const param)
 
 RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngineGame(hInstance)
 {
-	mMainWndCaption = L"Robot Simulator";
+	mMainWndCaption = L"OSLab Robot Simulator";
 }
 
 bool RobotSimulator::Init()

@@ -7,6 +7,10 @@ DepthMapEffect::DepthMapEffect(ID3D11Device* device) : Effect(device, "RobotSimu
 {
 	depthMapTech = mFX->GetTechniqueByName("DepthMapTech");
 	rect = mFX->GetVariableByName("gRect")->AsMatrix();
+	depthSensorFar = mFX->GetVariableByName("gDepthSensorFar")->AsScalar();
+	near_ = mFX->GetVariableByName("gNear")->AsScalar();
+	far_ = mFX->GetVariableByName("gFar")->AsScalar();
+	isPerspective = mFX->GetVariableByName("gIsPerspective")->AsScalar();
 	ndc = mFX->GetVariableByName("gNdc")->AsMatrix();
 	depthMap = mFX->GetVariableByName("gDepthMap")->AsShaderResource();
 	activeTech = &depthMapTech;
@@ -46,4 +50,26 @@ void DepthMapEffect::SetShaderResource(ID3D11ShaderResourceView *srv, const unsi
 {
 	assert(srv != NULL);
 	depthMap->SetResource(srv);
+}
+
+void DepthMapEffect::SetScalar(const void *data, const unsigned param)
+{
+	assert(data != NULL);
+	switch (param)
+	{
+	case 0:
+		isPerspective->SetBool(*(bool*)data);
+		break;
+	case 1:
+		depthSensorFar->SetFloat(*(float*)data);
+		break;
+	case 2:
+		near_->SetFloat(*(float*)data);
+		break;
+	case 3:
+		far_->SetFloat(*(float*)data);
+		break;
+	default:
+		assert(false);
+	}
 }
