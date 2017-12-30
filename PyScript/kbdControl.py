@@ -1,7 +1,7 @@
 import coolengine as ce
 
 class kbdControl:
-	def fixedUpdate(self, dt, param = None):
+	def step(self, dt, param = None):
 		actionCode = 0
 		if ce.isDown(37): # LeftArrow
 			actionCode += 8

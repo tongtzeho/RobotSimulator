@@ -5,5 +5,5 @@ class fpsInfo:
 		self.guiText = ce.guiObject(sObj)
 	
 	def update(self, dt, param = None):
-		self.guiText.setText("FPS = %d" % ce.getFPS())
+		self.guiText.setText("Logic FPS = %d\nRender FPS = %d" % (ce.getFPS(True), ce.getFPS(False)))
 		return 0
