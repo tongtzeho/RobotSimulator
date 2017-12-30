@@ -6,7 +6,7 @@ using namespace DirectX;
 Robot::Robot(const float velocity_, const float angularVelocity_, const std::vector<std::string> &resourceList, const std::unordered_map<std::string, std::string> &animResourceMap, const Transform &transform, CE::Script **const scr)
 	: velocity(velocity_), angularVelocity(angularVelocity_), Actor<>(resourceList, animResourceMap, "idle", transform, scr) {}
 
-unsigned Robot::FixedUpdateScripts(const float dt, void *const param)
+unsigned Robot::StepScripts(const float dt, void *const param)
 {
 	CheckStarted();
 	unsigned ret = 0;
@@ -14,15 +14,15 @@ unsigned Robot::FixedUpdateScripts(const float dt, void *const param)
 	{
 		if (scripts[i] != NULL)
 		{
-			ret |= scripts[i]->FixedUpdate(dt, param);
+			ret |= scripts[i]->Step(dt, param);
 		}
 	}
 	return ret;
 }
 
-unsigned Robot::FixedUpdate(const float dt, void *const param)
+unsigned Robot::Step(const float dt, void *const param)
 {
-	unsigned actionCode = FixedUpdateScripts(dt, param);
+	unsigned actionCode = StepScripts(dt, param);
 	if (actionCode & 0xC)
 	{
 		if (actionCode & 0x8)

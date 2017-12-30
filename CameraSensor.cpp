@@ -17,9 +17,9 @@ CameraSensor::~CameraSensor()
 	}
 }
 
-void CameraSensor::PreRender(void *const param)
+void CameraSensor::PreRender(std::vector<GameObject*> &__renderList, void *const param)
 {
-	Camera::PreRender(param);
+	Camera::PreRender(__renderList, param);
 	if (param != NULL && activated)
 	{
 		reinterpret_cast<std::vector<CameraSensor*>*>(param)->push_back(this);

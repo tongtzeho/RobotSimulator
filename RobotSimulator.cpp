@@ -1,4 +1,4 @@
-#include "Robot.h"
+ï»¿#include "Robot.h"
 #include "RobotSimulator.h"
 #include "DepthMapEffect.h"
 #include "GUICameraView.h"
@@ -12,7 +12,9 @@ RobotSimulatorScene::RobotSimulatorScene() : Scene(NULL, "@background.dds") {}
 
 void RobotSimulatorScene::Start(void *const param)
 {
-	Scene::Start();
+	state = Starting;
+	StartScripts(param);
+	cameraSensorList.reserve(64);
 	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 60, -50)), NULL, true, 1.0f, 10000.0f, 0.333333333f*Pi);
 	freeCamera->AddScript(new PythonScript("freeCamera"), false);
 	AddGameObject(freeCamera);
@@ -33,12 +35,12 @@ void RobotSimulatorScene::Start(void *const param)
 	EPuck *epuck = new EPuck(Quaternion(0, 1, 0, 1), Vector3(-50, 0, 0));
 	epuck->AddScript(new PythonScript("kbdControl"), false);
 	AddGameObject(epuck);
-	lights.push_back(Light());
-	lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0x484848ff), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 80);
-	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(0, 0, 0, 0, 8, 5, 0.35f, 0.35f, 0, 0xC));
+	__lights.push_back(Light());
+	__lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0x484848ff), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 76);
+	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(1, 0, 1, 0, -7, 5, 0.35f, 0.35f, 0, 0xC));
 	cameraInfo->AddScript(new PythonScript("cameraInfo"), false);
 	AddGUIObject(cameraInfo);
-	GUIText *fpsInfo = new GUIText("FPS = 0", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(1, 0, 1, 0, -6, 5, 0.35f, 0.35f, 0, 0xC));
+	GUIText *fpsInfo = new GUIText("Logic FPS = 0\nRender FPS = 0", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(0, 0, 0, 0, 7, 5, 0.35f, 0.35f, 0, 0xC));
 	fpsInfo->AddScript(new PythonScript("fpsInfo"), false);
 	AddGUIObject(fpsInfo);
 	GUICameraView *overLookMap = new GUICameraView(1, GUITransform(1, 1, 1, 1, 0, 0, 400, 225, 0, 0xF));
@@ -70,68 +72,62 @@ void RobotSimulatorScene::Start(void *const param)
 	AddGameObject(new Wall("@blue.png", 10.0f, -10.0f, 50.0f, -10.0f));
 	AddGameObject(new Wall("@yellow.png", 10.0f, 10.0f, 10.0f, 25.0f));
 	AddGameObject(new Wall("@yellow.png", 10.0f, 10.0f, 50.0f, 10.0f));
+	state = ReadyToUpdate;
 }
 
 void RobotSimulatorScene::PreRender(void *const param)
 {
+	cameraSensorList.clear();
+	Scene::PreRender(&cameraSensorList);
+}
+
+void RobotSimulatorScene::Render(void *const param)
+{
+	assert(state == ReadyToRender);
 	CheckStarted();
-	std::vector<CameraSensor*> sensorList;
-	sensorList.reserve(32);
-	if (IsCastShadow())
+	assert(mainCamera != NULL);
+	RenderShadowMap();
+	RenderScene();
+	RenderManager *renderMgr = CoolEngineGame::Instance()->GetRenderManager();
+	for (size_t i = 0; i < cameraSensorList.size(); ++i)
 	{
-		Effect *effect = CoolEngineGame::Instance()->GetRenderManager()->GetEffectAt(2);
-		effect->SetMatrix(XMLoadFloat4x3(&lights[mainLightIndex].GetViewMatrix())*lights[mainLightIndex].GetProjMatrix(), 1);
-	}
-	for (std::list<GameObject*>::iterator iter = gameObjectList.begin(); iter != gameObjectList.end(); ++iter)
-	{
-		(*iter)->PreRender(&sensorList);
-	}
-	for (size_t i = 0; i < sensorList.size(); ++i)
-	{
-		sensorList[i]->GetDrawableTexture()->Reset();
-		int oldMainLightIndex = mainLightIndex;
-		if (!sensorList[i]->isRenderShadow())
+		cameraSensorList[i]->GetDrawableTexture()->Reset();
+		int oldMainLightIndex = __mainLightIndex;
+		if (!cameraSensorList[i]->isRenderShadow())
 		{
-			mainLightIndex = -1;
+			__mainLightIndex = -1;
 		}
-		Effect *effect = CoolEngineGame::Instance()->GetRenderManager()->GetEffectAt(0);
-		Vector3 cameraPos;
-		if (!lights.empty())
-		{
-			effect->SetRawValue(&lights[0], sizeof(Light)*lights.size(), 1);
-		}
-		if (IsCastShadow())
-		{
-			effect->SetShaderResource(CoolEngineGame::Instance()->GetRenderManager()->GetShadowMapDepthSRV(), 1); // ÒõÓ°ÌùÍ¼
-			effect->SetMatrix(XMLoadFloat4x3(&lights[mainLightIndex].GetViewMatrix())*lights[mainLightIndex].GetProjMatrix(), 3);
-		}
-		int lightCount = lights.size();
-		effect->SetScalar(&lightCount);
-		DirectX::XMMATRIX cameraViewProj = XMLoadFloat4x3(&sensorList[i]->GetViewMatrix(&cameraPos))*sensorList[i]->GetProjMatrix();
-		effect->SetMatrix(cameraViewProj, 2);
+		Effect *effect = renderMgr->GetEffectAt(0);
+		Vector3 cameraPos(cameraSensorList[i]->__GetWorldPosition());
+		effect->SetMatrix(cameraSensorList[i]->__GetViewProjMatrix(), 2);
 		effect->SetRawValue(&cameraPos, sizeof(Vector3), 2);
-		for (std::list<GameObject*>::iterator iter = gameObjectList.begin(); iter != gameObjectList.end(); ++iter)
+		for (size_t i = 0; i < __renderList.size(); ++i)
 		{
-			(*iter)->Render(param);
+			__renderList[i]->Render(1, param);
 		}
-		mainLightIndex = oldMainLightIndex;
+		__mainLightIndex = oldMainLightIndex;
 	}
+	state = ReadyToDraw;
 }
 
 void RobotSimulatorScene::Draw(void *const param)
 {
+	assert(state == ReadyToDraw);
 	CheckStarted();
-	std::vector<std::pair<Effect*, unsigned>> shaders = { { CoolEngineGame::Instance()->GetRenderManager()->GetEffectAt(1), 1}, { CoolEngineGame::Instance()->GetRenderManager()->GetEffectAt(4), 1 } };
+	RenderManager *renderMgr = CoolEngineGame::Instance()->GetRenderManager();
+	renderMgr->UseTarget();
+	std::vector<std::pair<Effect*, unsigned>> shaders = { { renderMgr->GetEffectAt(1), 1}, { renderMgr->GetEffectAt(4), 1 } };
 	CoolEngineGame::Instance()->GetGUIManager()->SetNDCMatrixToShaders(shaders);
-	for (std::list<GUIObject*>::iterator iter = guiObjectList.begin(); iter != guiObjectList.end(); ++iter)
+	for (std::list<GUIObject*>::iterator iter = __guiObjectList.begin(); iter != __guiObjectList.end(); ++iter)
 	{
 		(*iter)->Draw(param);
 	}
+	state = ReadyToPostRender;
 }
 
 RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngineGame(hInstance)
 {
-	mMainWndCaption = L"OSLab Robot Simulator";
+	mainWndCaption = L"OSLab Robot Simulator";
 }
 
 bool RobotSimulator::Init()
