@@ -8,7 +8,7 @@
 
 using namespace CE;
 
-RobotSimulatorScene::RobotSimulatorScene() : Scene(NULL, "@background.dds") {}
+RobotSimulatorScene::RobotSimulatorScene() : Scene(NULL, "@background.dds", "@splash.png") {}
 
 void RobotSimulatorScene::Start(void *const param)
 {
@@ -37,10 +37,10 @@ void RobotSimulatorScene::Start(void *const param)
 	AddGameObject(epuck);
 	__lights.push_back(Light());
 	__lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0x484848ff), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 76);
-	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(1, 0, 1, 0, -7, 5, 0.35f, 0.35f, 0, 0xC));
+	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, Color(0, 0, 0), 3, GUITransform(1, 0, 1, 0, -7, 5, 0.35f, 0.35f, 0, 0xC));
 	cameraInfo->AddScript(new PythonScript("cameraInfo"), false);
 	AddGUIObject(cameraInfo);
-	GUIText *fpsInfo = new GUIText("Logic FPS = 0\nRender FPS = 0", FontSheet::FontStyleRegular, 0xff000000, 3, GUITransform(0, 0, 0, 0, 7, 5, 0.35f, 0.35f, 0, 0xC));
+	GUIText *fpsInfo = new GUIText("Logic FPS = 0\nRender FPS = 0", FontSheet::FontStyleRegular, Color(0, 0, 0), 3, GUITransform(0, 0, 0, 0, 7, 5, 0.35f, 0.35f, 0, 0xC));
 	fpsInfo->AddScript(new PythonScript("fpsInfo"), false);
 	AddGUIObject(fpsInfo);
 	GUICameraView *overLookMap = new GUICameraView(1, GUITransform(1, 1, 1, 1, 0, 0, 400, 225, 0, 0xF));
@@ -85,7 +85,7 @@ void RobotSimulatorScene::Render(void *const param)
 {
 	assert(state == ReadyToRender);
 	CheckStarted();
-	assert(mainCamera != NULL);
+	assert(__mainCamera != NULL);
 	RenderShadowMap();
 	RenderScene();
 	RenderManager *renderMgr = CoolEngineGame::Instance()->GetRenderManager();
@@ -130,7 +130,7 @@ RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngineGame(hInstance)
 	mainWndCaption = L"OSLab Robot Simulator";
 }
 
-bool RobotSimulator::Init()
+bool RobotSimulator::InitRobotSimulator()
 {
 	if (!CoolEngineGame::Init("RobotSimulator/"))
 	{

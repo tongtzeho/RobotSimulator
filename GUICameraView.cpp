@@ -41,12 +41,18 @@ void GUICameraView::Draw(void *const param)
 			renderMgr->SetBlendStateAt(-1);
 			renderMgr->SetDepthStencilStateAt(0, (GetDepth() & 3) << 6);
 			effect->SetScalar(&isPerspective, 0);
-			effect->SetScalar(&depthSensorFar, 1);
 			if (isPerspective)
 			{
-				effect->SetScalar(&near_, 2);
+				float temp = far_ / (far_ - near_);
+				effect->SetScalar(&temp, 1);
+				temp = (near_*far_*(far_ - 1)) / ((far_ - near_)*(far_ - near_)*depthSensorFar);
+				effect->SetScalar(&temp, 2);
 			}
-			effect->SetScalar(&far_, 3);
+			else
+			{
+				float temp = far_ / depthSensorFar;
+				effect->SetScalar(&temp, 2);
+			}
 			effect->GetActiveTech()->GetPassByIndex(0)->Apply(0, md3dImmediateContext);
 			md3dImmediateContext->DrawIndexed(6, 0, 0);
 		}

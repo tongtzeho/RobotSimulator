@@ -3,13 +3,12 @@
 using namespace DirectX;
 using namespace CE;
 
-DepthMapEffect::DepthMapEffect(ID3D11Device* device) : Effect(device, "RobotSimulator/Shader/DepthMap.fx")
+DepthMapEffect::DepthMapEffect(ID3D11Device* device) : Effect(device, "$DepthMap.fx")
 {
 	depthMapTech = mFX->GetTechniqueByName("DepthMapTech");
 	rect = mFX->GetVariableByName("gRect")->AsMatrix();
-	depthSensorFar = mFX->GetVariableByName("gDepthSensorFar")->AsScalar();
-	near_ = mFX->GetVariableByName("gNear")->AsScalar();
-	far_ = mFX->GetVariableByName("gFar")->AsScalar();
+	denominator = mFX->GetVariableByName("gDenominator")->AsScalar();
+	numerator = mFX->GetVariableByName("gNumerator")->AsScalar();
 	isPerspective = mFX->GetVariableByName("gIsPerspective")->AsScalar();
 	ndc = mFX->GetVariableByName("gNdc")->AsMatrix();
 	depthMap = mFX->GetVariableByName("gDepthMap")->AsShaderResource();
@@ -61,13 +60,10 @@ void DepthMapEffect::SetScalar(const void *data, const unsigned param)
 		isPerspective->SetBool(*(bool*)data);
 		break;
 	case 1:
-		depthSensorFar->SetFloat(*(float*)data);
+		denominator->SetFloat(*(float*)data);
 		break;
 	case 2:
-		near_->SetFloat(*(float*)data);
-		break;
-	case 3:
-		far_->SetFloat(*(float*)data);
+		numerator->SetFloat(*(float*)data);
 		break;
 	default:
 		assert(false);

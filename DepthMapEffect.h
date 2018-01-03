@@ -7,9 +7,8 @@ class DepthMapEffect : public CE::Effect
 private:
 	ID3DX11EffectTechnique* depthMapTech;
 	ID3DX11EffectMatrixVariable* rect;
-	ID3DX11EffectScalarVariable* depthSensorFar;
-	ID3DX11EffectScalarVariable* near_;
-	ID3DX11EffectScalarVariable* far_;
+	ID3DX11EffectScalarVariable* denominator;
+	ID3DX11EffectScalarVariable* numerator;
 	ID3DX11EffectScalarVariable* isPerspective;
 	ID3DX11EffectMatrixVariable* ndc;
 	ID3DX11EffectShaderResourceVariable* depthMap;

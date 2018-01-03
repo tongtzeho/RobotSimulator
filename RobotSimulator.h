@@ -19,5 +19,5 @@ class RobotSimulator : public CE::CoolEngineGame
 {
 public:
 	RobotSimulator(HINSTANCE hInstance);
-	bool Init();
+	bool InitRobotSimulator();
 };
