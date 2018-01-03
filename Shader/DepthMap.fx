@@ -6,9 +6,8 @@ cbuffer cbPerFrame
 cbuffer cbPerObject
 {
 	float4x4 gRect;
-	float gDepthSensorFar;
-	float gNear;
-	float gFar;
+	float gNumerator;
+	float gDenominator;
 	bool gIsPerspective;
 };
 
@@ -46,12 +45,14 @@ float4 PS(VertexOut pin) : SV_Target
 {
 	if (gIsPerspective)
 	{
-		float r = clamp(((gNear * gFar - gNear) * gFar) / ((gFar - gDepthMap.Sample(gTriLinearSam, pin.Tex).r * (gFar - gNear)) * (gFar - gNear) * gDepthSensorFar), 0, 1);
+		//float r = clamp(((gNear * gFar - gNear) * gFar) / ((gFar - gDepthMap.Sample(gTriLinearSam, pin.Tex).r * (gFar - gNear)) * (gFar - gNear) * gDepthSensorFar), 0, 1);
+		float r = clamp(gNumerator / (gDenominator - gDepthMap.Sample(gTriLinearSam, pin.Tex).r), 0, 1);
 		return float4(r, r, 0, 1);
 	}
 	else
 	{
-		float r = clamp(gDepthMap.Sample(gTriLinearSam, pin.Tex).r * gFar / gDepthSensorFar, 0, 1);
+		//float r = clamp(gDepthMap.Sample(gTriLinearSam, pin.Tex).r * gFar / gDepthSensorFar, 0, 1);
+		float r = clamp(gDepthMap.Sample(gTriLinearSam, pin.Tex).r * gNumerator, 0, 1);
 		return float4(r, r, 0, 1);
 	}
 }
