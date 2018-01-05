@@ -13,6 +13,7 @@ RobotSimulatorScene::RobotSimulatorScene() : Scene(NULL, "@background.dds", "@sp
 void RobotSimulatorScene::Start(void *const param)
 {
 	state = Starting;
+	Sleep(300);
 	StartScripts(param);
 	cameraSensorList.reserve(64);
 	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 60, -50)), NULL, true, 1.0f, 10000.0f, 0.333333333f*Pi);
