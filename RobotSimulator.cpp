@@ -26,7 +26,7 @@ void RobotSimulatorScene::Start(void *const param)
 	floor->SetCastShadow(false);
 	floor->SetReceiveShadow(false);
 	AddGameObject(floor);
-	Drawable<> *screen = new Drawable<>({ "@screen.lua:Mesh", "@screen.png", "@screen.lua:Material" });
+	Drawable<> *screen = new Drawable<>({ "@screen.lua:Mesh", "@screen.dds", "@screen.lua:Material" });
 	screen->SetCastShadow(false);
 	AddGameObject(screen);
 	Drawable<> *platform = new Drawable<>({ "@platform.lua:Mesh", "@platform.png", "@platform.lua:Material" });
@@ -37,7 +37,7 @@ void RobotSimulatorScene::Start(void *const param)
 	epuck->AddScript(new PythonScript("kbdControl"), false);
 	AddGameObject(epuck);
 	__lights.push_back(Light());
-	__lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xc0c0c0ff), Color(0x484848ff), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 76);
+	__lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xe0e0e0ff), Color(0x484848ff), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 76);
 	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, Color(0, 0, 0), 3, GUITransform(1, 0, 1, 0, -7, 5, 0.35f, 0.35f, 0, 0xC));
 	cameraInfo->AddScript(new PythonScript("cameraInfo"), false);
 	AddGUIObject(cameraInfo);
@@ -139,6 +139,19 @@ bool RobotSimulator::InitRobotSimulator()
 	}
 
 	GetRenderManager()->AddEffect(new DepthMapEffect(GetDevice()));
+
+	D3D11_BLEND_DESC transparentDesc = { 0 };
+	transparentDesc.AlphaToCoverageEnable = false;
+	transparentDesc.IndependentBlendEnable = false;
+	transparentDesc.RenderTarget[0].BlendEnable = true;
+	transparentDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+	transparentDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
+	transparentDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	transparentDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_BLEND_FACTOR;
+	transparentDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_BLEND_FACTOR;
+	transparentDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	transparentDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	GetRenderManager()->AddBlendState(&transparentDesc);
 
 	// Init Scene
 	scene = new RobotSimulatorScene();
