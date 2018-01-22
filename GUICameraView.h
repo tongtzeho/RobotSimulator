@@ -13,7 +13,7 @@ private:
 	bool isDepthMap;
 	bool isPerspective;
 public:
-	GUICameraView(const int depth = 0, const CE::GUITransform &guiTransform = CE::GUITransform(), CE::Script **const scr = NULL) : GUIImage(depth, guiTransform, scr), cameraSensor(NULL), isDepthMap(false) {}
+	GUICameraView(const int depth = 0, const CE::GUITransform &guiTransform = CE::GUITransform(), CE::Script **const scr = nullptr) : GUIImage(depth, guiTransform, scr), cameraSensor(nullptr), isDepthMap(false) {}
 	void SetCameraSensor(CameraSensor *const cameraSensor, const bool isDepthMap = false);
-	virtual void Draw(void *const param = NULL);
+	virtual void Draw(void *const param = nullptr);
 };

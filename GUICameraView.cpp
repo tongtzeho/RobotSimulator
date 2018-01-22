@@ -30,11 +30,11 @@ void GUICameraView::Draw(void *const param)
 	else
 	{
 		CheckStarted();
-		if (GetDepth() >= 0 && GetTexture() != NULL)
+		if (GetDepth() >= 0 && GetTexture() != nullptr)
 		{
-			ID3D11DeviceContext *md3dImmediateContext = CoolEngineGame::Instance()->GetDeviceContext();
+			ID3D11DeviceContext *d3d11DeviceContext = CoolEngineGame::Instance()->GetDeviceContext();
 			RenderManager *renderMgr = CoolEngineGame::Instance()->GetRenderManager();
-			Effect *effect = renderMgr->GetEffectAt(4);
+			Effect *effect = renderMgr->GetEffectByName("$DepthMap.fx");
 			std::pair<Effect*, std::pair<unsigned, unsigned>> shader({ effect,{ 0, 0 } });
 			CoolEngineGame::Instance()->GetGUIManager()->PrepareToDrawImage(*this, &shader);
 			renderMgr->SetRasterizerStateAt(-1);
@@ -53,8 +53,8 @@ void GUICameraView::Draw(void *const param)
 				float temp = far_ / depthSensorFar;
 				effect->SetScalar(&temp, 2);
 			}
-			effect->GetActiveTech()->GetPassByIndex(0)->Apply(0, md3dImmediateContext);
-			md3dImmediateContext->DrawIndexed(6, 0, 0);
+			effect->GetActiveTech()->GetPassByIndex(0)->Apply(0, d3d11DeviceContext);
+			d3d11DeviceContext->DrawIndexed(6, 0, 0);
 		}
 	}
 }

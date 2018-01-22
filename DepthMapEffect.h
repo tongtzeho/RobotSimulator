@@ -12,7 +12,6 @@ private:
 	ID3DX11EffectScalarVariable* isPerspective;
 	ID3DX11EffectMatrixVariable* ndc;
 	ID3DX11EffectShaderResourceVariable* depthMap;
-	virtual void BuildInputLayout(ID3D11Device* device);
 public:
 	DepthMapEffect(ID3D11Device* device);
 	virtual void SetMatrix(DirectX::CXMMATRIX matrix, const unsigned param = 0);

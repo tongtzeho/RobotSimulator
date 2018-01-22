@@ -5,29 +5,14 @@ using namespace CE;
 
 DepthMapEffect::DepthMapEffect(ID3D11Device* device) : Effect(device, "$DepthMap.fx")
 {
-	depthMapTech = mFX->GetTechniqueByName("DepthMapTech");
-	rect = mFX->GetVariableByName("gRect")->AsMatrix();
-	denominator = mFX->GetVariableByName("gDenominator")->AsScalar();
-	numerator = mFX->GetVariableByName("gNumerator")->AsScalar();
-	isPerspective = mFX->GetVariableByName("gIsPerspective")->AsScalar();
-	ndc = mFX->GetVariableByName("gNdc")->AsMatrix();
-	depthMap = mFX->GetVariableByName("gDepthMap")->AsShaderResource();
+	depthMapTech = fx->GetTechniqueByName("DepthMapTech");
+	rect = fx->GetVariableByName("gRect")->AsMatrix();
+	denominator = fx->GetVariableByName("gDenominator")->AsScalar();
+	numerator = fx->GetVariableByName("gNumerator")->AsScalar();
+	isPerspective = fx->GetVariableByName("gIsPerspective")->AsScalar();
+	ndc = fx->GetVariableByName("gNdc")->AsMatrix();
+	depthMap = fx->GetVariableByName("gDepthMap")->AsShaderResource();
 	activeTech = &depthMapTech;
-	BuildInputLayout(device);
-}
-
-void DepthMapEffect::BuildInputLayout(ID3D11Device* device)
-{
-	D3D11_INPUT_ELEMENT_DESC layoutDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	D3DX11_PASS_DESC passDesc;
-	(*activeTech)->GetPassByIndex(0)->GetDesc(&passDesc);
-	HR(device->CreateInputLayout(layoutDesc, 3, passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &mInputLayout));
 }
 
 void DepthMapEffect::SetMatrix(CXMMATRIX matrix, const unsigned param)
@@ -47,13 +32,13 @@ void DepthMapEffect::SetMatrix(CXMMATRIX matrix, const unsigned param)
 
 void DepthMapEffect::SetShaderResource(ID3D11ShaderResourceView *srv, const unsigned param)
 {
-	assert(srv != NULL);
+	assert(srv != 0);
 	depthMap->SetResource(srv);
 }
 
 void DepthMapEffect::SetScalar(const void *data, const unsigned param)
 {
-	assert(data != NULL);
+	assert(data != nullptr);
 	switch (param)
 	{
 	case 0:

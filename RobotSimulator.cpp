@@ -4,11 +4,10 @@
 #include "GUICameraView.h"
 #include "CameraSensor.h"
 #include "Wall.h"
-#include "../Engine/Render/WICTextureLoader.h"
 
 using namespace CE;
 
-RobotSimulatorScene::RobotSimulatorScene() : Scene(NULL, "@background.dds", "@splash.png") {}
+RobotSimulatorScene::RobotSimulatorScene() : Scene(nullptr, nullptr, "@splash.png") {}
 
 void RobotSimulatorScene::Start(void *const param)
 {
@@ -16,20 +15,20 @@ void RobotSimulatorScene::Start(void *const param)
 	Sleep(300);
 	StartScripts(param);
 	cameraSensorList.reserve(64);
-	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 60, -50)), NULL, true, 1.0f, 10000.0f, 0.333333333f*Pi);
+	Camera *freeCamera = new Camera(Transform(Vector3(1, 1, 1), Quaternion(0.5f, 0, 0, 0.866025403784f), Vector3(0, 60, -50)), nullptr, true, 1.0f, 10000.0f, 0.333333333f*Pi);
 	freeCamera->AddScript(new PythonScript("freeCamera"), false);
 	AddGameObject(freeCamera);
-	CameraSensor *overLookCamera = new CameraSensor(640, 360, Transform(Vector3(1, 1, 1), Quaternion(0.7071f, 0, 0, 0.707101f), Vector3(0, 9.9f, 0)), NULL, false, 0.0f, 10.0f, 128.0f, 10.0f);
+	CameraSensor *overLookCamera = new CameraSensor(640, 360, Transform(Vector3(1, 1, 1), Quaternion(0.7071f, 0, 0, 0.707101f), Vector3(0, 9.9f, 0)), nullptr, false, 0.0f, 10.0f, 128.0f, 10.0f);
 	overLookCamera->SetRenderShadow(false);
 	AddGameObject(overLookCamera);
-	Drawable<> *floor = new Drawable<>({ "@floor.lua:Mesh", "@floor.dds", "@floor.lua:Material" });
+	Renderable<> *floor = new Renderable<>({ "@floor.lua:Mesh", "@floor.dds", "@floor.lua:Material" });
 	floor->SetCastShadow(false);
 	floor->SetReceiveShadow(false);
+	Renderable<> *screen = new Renderable<>({ "@screen.lua:Mesh", "@screen.dds", "@screen.lua:Material" });
 	AddGameObject(floor);
-	Drawable<> *screen = new Drawable<>({ "@screen.lua:Mesh", "@screen.dds", "@screen.lua:Material" });
 	screen->SetCastShadow(false);
 	AddGameObject(screen);
-	Drawable<> *platform = new Drawable<>({ "@platform.lua:Mesh", "@platform.png", "@platform.lua:Material" });
+	Renderable<> *platform = new Renderable<>({ "@platform.lua:Mesh", "@platform.png", "@platform.lua:Material" });
 	platform->SetCastShadow(false);
 	platform->SetReceiveShadow(false);
 	AddGameObject(platform);
@@ -37,7 +36,7 @@ void RobotSimulatorScene::Start(void *const param)
 	epuck->AddScript(new PythonScript("kbdControl"), false);
 	AddGameObject(epuck);
 	__lights.push_back(Light());
-	__lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xe0e0e0ff), Color(0x484848ff), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 76);
+	__lights[0].SetDirectionalLight(Color(0xffffffff), Color(0xffe0e0e0), Color(0xff484848), Vector3(0.5f, -0.5f, 0.8f), Vector3(0, 0, 0), 76);
 	GUIText *cameraInfo = new GUIText("Camera: Pos = (0, 0, 0) Dir = (0, 0, 0)", FontSheet::FontStyleRegular, Color(0, 0, 0), 3, GUITransform(1, 0, 1, 0, -7, 5, 0.35f, 0.35f, 0, 0xC));
 	cameraInfo->AddScript(new PythonScript("cameraInfo"), false);
 	AddGUIObject(cameraInfo);
@@ -86,9 +85,11 @@ void RobotSimulatorScene::Render(void *const param)
 {
 	assert(state == ReadyToRender);
 	CheckStarted();
-	assert(__mainCamera != NULL);
-	RenderShadowMap();
-	RenderScene();
+	assert(__mainCamera != nullptr);
+	RenderSky();
+	DrawShadowMap();
+	RenderObjects();
+	RenderParticles();
 	RenderManager *renderMgr = CoolEngineGame::Instance()->GetRenderManager();
 	for (size_t i = 0; i < cameraSensorList.size(); ++i)
 	{
@@ -102,9 +103,9 @@ void RobotSimulatorScene::Render(void *const param)
 		Vector3 cameraPos(cameraSensorList[i]->__GetWorldPosition());
 		effect->SetMatrix(cameraSensorList[i]->__GetViewProjMatrix(), 2);
 		effect->SetRawValue(&cameraPos, sizeof(Vector3), 2);
-		for (size_t i = 0; i < __renderList.size(); ++i)
+		for (size_t i = 0; i < __renderLists[RenderManager::RenderOpaqueObjects].size(); ++i)
 		{
-			__renderList[i]->Render(1, param);
+			__renderLists[RenderManager::RenderOpaqueObjects][i]->Render(1, param);
 		}
 		__mainLightIndex = oldMainLightIndex;
 	}
@@ -159,3 +160,28 @@ bool RobotSimulator::InitRobotSimulator()
 
 	return true;
 }
+/*
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
+	PSTR cmdLine, int showCmd)
+{
+	// Enable run-time memory check for debug builds.
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+#if defined(DEBUG) | defined(_DEBUG)
+	AllocConsole(); // Create a new console window  
+	::freopen("CONOUT$", "w", stdout); // Configuration Properties -> C/C++ -> Preprocessor  add _CRT_SECURE_NO_WARNINGS
+	::freopen("CONOUT$", "w", stderr);
+#endif
+
+	RobotSimulator simulator(hInstance);
+
+	if (!simulator.InitRobotSimulator())
+	{
+		return 0;
+	}
+
+	return simulator.Run();
+}
+*/
