@@ -93,14 +93,9 @@ void EPuck::Render(const unsigned stage, void *const param)
 	CheckStarted();
 	if (__renderableActivated && __mesh != nullptr && __texture != nullptr && __material != nullptr)
 	{
+		Renderable<>::InputAssemblerSetting(stage, param);
 		ID3D11DeviceContext *d3d11DeviceContext = CoolEngineGame::Instance()->GetDeviceContext();
 		RenderManager *renderMgr = CoolEngineGame::Instance()->GetRenderManager();
-		d3d11DeviceContext->IASetInputLayout(Vertex<Vertex3f3f2f>::GetInputLayout());
-		d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		unsigned stride = sizeof(Vertex3f3f2f);
-		unsigned offset = 0;
-		d3d11DeviceContext->IASetVertexBuffers(0, 1, __mesh->GetVertexBuffer(), &stride, &offset);
-		d3d11DeviceContext->IASetIndexBuffer(__mesh->GetIndexBuffer(), __mesh->IsIndexByte4() ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT, 0);
 		Effect *effect = renderMgr->GetEffectAt(stage == RenderManager::DrawShadowMap ? 2 : 0);
 		effect->SetMatrix(XMLoadFloat4x3(&__worldMatrix), 0);
 		if (stage == RenderManager::DrawShadowMap)
@@ -122,7 +117,6 @@ void EPuck::Render(const unsigned stage, void *const param)
 			effect->SetScalar(&receiveShadow, 2);
 			ID3DX11EffectTechnique *activeTech = effect->ActivateTech(0);
 			renderMgr->SetRasterizerStateAt(-1);
-			renderMgr->SetBlendStateAt(-1);
 			renderMgr->SetDepthStencilStateAt(-1);
 			activeTech->GetPassByIndex(0)->Apply(0, d3d11DeviceContext);
 			d3d11DeviceContext->DrawIndexed(transparentIndex, 0, 0);
