@@ -1,9 +1,8 @@
 import coolengine as ce
 
 class fpsInfo:
-	def start(self, sObj, param = None):
-		self.guiText = ce.guiObject(sObj)
+	def __init__(self, entity, param = None):
+		self.text = ce.text(entity.getComponent("Text", "FPS"))
 	
 	def update(self, dt, param = None):
-		self.guiText.setText("Logic FPS = %d\nRender FPS = %d" % (ce.getFPS(True), ce.getFPS(False)))
-		return 0
+		self.text.setContent(" Main Thread FPS = %d\nRender Thread FPS = %d" % (ce.getFPS(True), ce.getFPS(False)))
