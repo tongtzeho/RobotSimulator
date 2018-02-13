@@ -1,4 +1,5 @@
 Mesh = {
+	Type = "ffffffff",
 	V = {
 		{-66, -0.18, -38, -0.8233933772, 0.3118914308, -0.4740749748, 0, 1},
 		{-66, -0.18, 38, -0.8233933772, 0.3118914308, 0.4740749748, 0, 0},
@@ -23,4 +24,13 @@ Material = {
 	0.9, 0.9, 0.9, 1.0,
 	0.4, 0.4, 0.4, 32.0,
 	0.0, 0.0, 0.0, 0.0
+}
+
+Entity = {
+	Comp = {
+		{"Mesh", "@platform.lua:Mesh"},
+		{"Material", "@platform.lua:Material"},
+		{"Texture", "DiffuseMap", "@platform.png"},
+		{"Renderer", "MeshRenderer", "0 0"}
+	}
 }
