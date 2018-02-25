@@ -1,3 +1,5 @@
+#include "EpuckRenderer.h"
+#include "RobotSimulatorScene.h"
 #include "RobotSimulator.h"
 
 using namespace CE;
@@ -14,8 +16,17 @@ bool RobotSimulator::Init(const char *rootDir)
 		return false;
 	}
 
+	ID3D11Device *const d3d11Device = GetDevice();
+	RenderManager *const renderMgr = GetRenderManager();
+
+	/* 添加自定义Shader */
+	renderMgr->RegisterBinaryEffect("$Epuck");
+
+	/* 添加自定义Renderer */
+	renderMgr->RegisterRenderer("EpuckRenderer", EpuckRenderer::Instancing);
+
 	/* 创建并加载场景 */
-	scene = new Scene();
+	scene = new RobotSimulatorScene();
 	scene->Init("@simscene.lua:Scene");
 
 	return true;
