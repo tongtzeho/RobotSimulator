@@ -3200,14 +3200,14 @@ Mesh_EpuckWheel = {
 		{1.302, -0.04, -0.0692821, 1, 0, 0, 0.875, 0.625},
 		{1.302, 1.39876e-008, -0.08, 1, 0, 0, 0.875, 0.625},
 		{1.302, 0, -0, 1, 0, 0, 0.875, 0.625},
-		{1.102, -0.56, 0.56, 1, 0, 0, 0.502, 0.502},
-		{1.102, -0.56, -0.56, 1, 0, 0, 0.748, 0.502},
-		{1.102, 0.56, -0.56, 1, 0, 0, 0.748, 0.748},
-		{1.102, 0.56, 0.56, 1, 0, 0, 0.502, 0.748},
-		{-1.102, -0.56, 0.56, -1, 0, 0, 0.502, 0.502},
-		{-1.102, -0.56, -0.56, -1, 0, 0, 0.502, 0.748},
-		{-1.102, 0.56, -0.56, -1, 0, 0, 0.748, 0.748},
-		{-1.102, 0.56, 0.56, -1, 0, 0, 0.748, 0.502},
+		{1.113, -0.56, 0.56, 1, 0, 0, 0.502, 0.502},
+		{1.113, -0.56, -0.56, 1, 0, 0, 0.748, 0.502},
+		{1.113, 0.56, -0.56, 1, 0, 0, 0.748, 0.748},
+		{1.113, 0.56, 0.56, 1, 0, 0, 0.502, 0.748},
+		{-1.113, -0.56, 0.56, -1, 0, 0, 0.502, 0.502},
+		{-1.113, -0.56, -0.56, -1, 0, 0, 0.502, 0.748},
+		{-1.113, 0.56, -0.56, -1, 0, 0, 0.748, 0.748},
+		{-1.113, 0.56, 0.56, -1, 0, 0, 0.748, 0.502},
 	},
 	I = {
 		0, 37, 38,
@@ -4717,18 +4717,34 @@ Entity_Wheel = {
 		{"Mesh", "@epuck.lua:Mesh_EpuckWheel"},
 		{"Material", "@epuck.lua:Material_EpuckWheel"},
 		{"Texture", "DiffuseMap", "@epuck.png"},
-		{"Renderer", "MeshRenderer", "1 1"}
+		{"Renderer", "MeshRenderer", "1 1"},
+		{"Script", "epuck_wheel"}
+	}
+}
+
+Rigidbody = {
+	Shape = "cylinder 1.43 0.99",
+	T = "0 0.99 0",
+	Mass = 3
+}
+
+Entity_Camera = {
+	Comp = {
+		{"Camera", "1 1 640 480 0.025 500 1.0471975512", "0 1 0 1 0 0 0 0.33333333 0 0"}
 	}
 }
 
 Entity = {
 	Child = {
-		{ Config = "@epuck.lua:Entity_Wheel", Name = "EpuckWheel", T = "0 0.8 0" }
+		{ Config = "@epuck.lua:Entity_Wheel", Name = "EpuckWheel", T = "0 0.8 0" },
+		{ Config = "@epuck.lua:Entity_Camera", Name = "EpuckCamera", T = "0 1.14 1.39"}
 	},
 	Comp = {
 		{"Mesh", "@epuck.lua:Mesh_EpuckBody"},
 		{"Material", "@epuck.lua:Material_EpuckBody"},
 		{"Texture", "DiffuseMap", "@epuck.png"},
-		{"Renderer", "MeshRenderer", "1 1"}
+		{"Renderer", "EpuckRenderer", "1 1"},
+		{"Rigidbody", "@epuck.lua:Rigidbody"},
+		--{"Renderer", "ColliderRenderer", "1 0 0 1"},
 	}
 }

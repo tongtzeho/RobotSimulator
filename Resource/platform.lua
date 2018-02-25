@@ -26,11 +26,18 @@ Material = {
 	0.0, 0.0, 0.0, 0.0
 }
 
+Rigidbody = {
+	Shape = "Box 66 2 38",
+	T = "0 -2 0",
+	Mass = 0,
+}
+
 Entity = {
 	Comp = {
 		{"Mesh", "@platform.lua:Mesh"},
 		{"Material", "@platform.lua:Material"},
 		{"Texture", "DiffuseMap", "@platform.png"},
-		{"Renderer", "MeshRenderer", "0 0"}
+		{"Renderer", "MeshRenderer", "0 0"},
+		{"Rigidbody", "@platform.lua:Rigidbody"},
 	}
 }
