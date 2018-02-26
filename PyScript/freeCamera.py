@@ -10,6 +10,12 @@ class freeCamera:
 	
 	def start(self, param = None):
 		self.prevCursorPos = ce.getCursorRayDirInProj()
+		self.text = ce.text(self.entity.getComponent("Text"))
+	
+	def updateGUI(self):
+		position = self.entity.getTranslation()
+		direction = ce.vector3(0, 0, 1).rotate(self.entity.getQuaternion())
+		self.text.setContent("Pos(%f, %f, %f)\nDir(%f, %f, %f)" % (position.x, position.y, position.z, direction.x, direction.y, direction.z))
 	
 	def update(self, dt, param = None):
 		self.euler = self.entity.getEulerAngle()
@@ -34,3 +40,4 @@ class freeCamera:
 			self.euler.z = 0
 			self.entity.setEulerAngle(self.euler)
 		self.prevCursorPos = self.cursorPos
+		self.updateGUI()
