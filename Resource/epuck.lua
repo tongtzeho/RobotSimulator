@@ -4722,15 +4722,26 @@ Entity_Wheel = {
 	}
 }
 
+Collider_Proximity = {
+	Shape = "cylinder 3 0.2",
+	T = "0 1.33 0",
+	Trigger = true,
+	Group = 0x40000000,
+	Mask = 0x3FFFFFFF,
+}
+
 Rigidbody = {
-	Shape = "cylinder 1.43 0.99",
-	T = "0 0.99 0",
+	Shape = "cylinder 1.43 0.98",
+	T = "0 0.98 0",
 	Mass = 3
 }
 
+EpuckCameraIdentifier = "1 1 160 120 0.025 500 1.0471975512"
+
 Entity_Camera = {
 	Comp = {
-		{"Camera", "1 1 640 480 0.025 500 1.0471975512", "0 1 0 1 0 0 0 0.33333333 0 0"}
+		{"Camera", EpuckCameraIdentifier, "0 1 0 1 0 0 0 0.33333333 0 0"},
+		{"RGBSensor", EpuckCameraIdentifier, "10 1"}
 	}
 }
 
@@ -4744,7 +4755,8 @@ Entity = {
 		{"Material", "@epuck.lua:Material_EpuckBody"},
 		{"Texture", "DiffuseMap", "@epuck.png"},
 		{"Renderer", "EpuckRenderer", "1 1"},
+		{"Collider", "@epuck.lua:Collider_Proximity"},
 		{"Rigidbody", "@epuck.lua:Rigidbody"},
-		--{"Renderer", "ColliderRenderer", "1 0 0 1"},
+		{"Renderer", "ColliderRenderer", "1 0 0 1"},
 	}
 }
