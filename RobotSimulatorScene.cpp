@@ -31,3 +31,29 @@ void RobotSimulatorScene::RenderObjects(void *const param)
 
 	Scene::RenderObjects(param);
 }
+
+void RobotSimulatorScene::PostRender(void *const param)
+{
+	assert(state == ReadyToPostRender);
+	for (size_t i = 0; i < rgbSensorArray.Size(); ++i)
+	{
+		rgbSensorArray[i]->CopyTextureData();
+	}
+	state = ReadyToUpdate;
+}
+
+bool RobotSimulatorScene::AppendRGBSensor(RGBSensor *rgbSensor)
+{
+	assert(rgbSensor != nullptr);
+	bool ret = rgbSensorArray.Append(rgbSensor);
+	assert(ret);
+	return ret;
+}
+
+bool RobotSimulatorScene::DeleteRGBSensor(RGBSensor *rgbSensor)
+{
+	assert(rgbSensor != nullptr);
+	bool ret = rgbSensorArray.UnstableErase(rgbSensor);
+	assert(ret);
+	return ret;
+}

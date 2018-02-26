@@ -1,6 +1,8 @@
+#include "RGBSensor.h"
 #include "EpuckRenderer.h"
 #include "RobotSimulatorScene.h"
 #include "RobotSimulator.h"
+#include "PyRobotSimulator.h"
 
 using namespace CE;
 
@@ -9,12 +11,21 @@ RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngine(hInstance)
 	mainWndCaption = L"PKU OSLab Robot Simulator - Cool Engine";
 }
 
+void RobotSimulator::InitPython(const char *rootDir)
+{
+	CoolEngine::InitPython(rootDir);
+	PyRobotSimulator::Initialize();
+}
+
 bool RobotSimulator::Init(const char *rootDir)
 {
 	if (!CoolEngine::Init(rootDir))
 	{
 		return false;
 	}
+
+	/* 添加自定义Component */
+	Entity::RegisterComponent<RGBSensor>("RGBSensor");
 
 	ID3D11Device *const d3d11Device = GetDevice();
 	RenderManager *const renderMgr = GetRenderManager();
