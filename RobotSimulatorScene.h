@@ -2,17 +2,18 @@
 
 #include "../Engine/CoolEngine.h"
 
-#include "RGBSensor.h"
+#include "ICameraSensor.h"
 
 class RobotSimulatorScene : public CE::Scene
 {
 private:
 	virtual void RenderObjects(void *const param = nullptr);
-	CE::UnstableHashArray<RGBSensor*> rgbSensorArray;
+	CE::UnstableHashArray<ICameraSensor*> cameraSensorArray;
 public:
 	RobotSimulatorScene() = default;
 	virtual ~RobotSimulatorScene() = default;
+	virtual void PreRender(void *const param = nullptr);
 	virtual void PostRender(void *const param = nullptr);
-	bool AppendRGBSensor(RGBSensor *rgbSensor);
-	bool DeleteRGBSensor(RGBSensor *rgbSensor);
+	bool AppendCameraSensor(ICameraSensor *const cameraSensor);
+	bool DeleteCameraSensor(ICameraSensor *const cameraSensor);
 };

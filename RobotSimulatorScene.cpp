@@ -1,3 +1,4 @@
+#include "RGBSensor.h"
 #include "RobotSimulatorScene.h"
 
 using namespace CE;
@@ -32,28 +33,37 @@ void RobotSimulatorScene::RenderObjects(void *const param)
 	Scene::RenderObjects(param);
 }
 
+void RobotSimulatorScene::PreRender(void *const param)
+{
+	for (size_t i = 0; i < cameraSensorArray.Size(); ++i)
+	{
+		cameraSensorArray[i]->PreRender();
+	}
+	Scene::PreRender(param);
+}
+
 void RobotSimulatorScene::PostRender(void *const param)
 {
 	assert(state == ReadyToPostRender);
-	for (size_t i = 0; i < rgbSensorArray.Size(); ++i)
+	for (size_t i = 0; i < cameraSensorArray.Size(); ++i)
 	{
-		rgbSensorArray[i]->CopyTextureData();
+		cameraSensorArray[i]->Sample();
 	}
 	state = ReadyToUpdate;
 }
 
-bool RobotSimulatorScene::AppendRGBSensor(RGBSensor *rgbSensor)
+bool RobotSimulatorScene::AppendCameraSensor(ICameraSensor *const cameraSensor)
 {
-	assert(rgbSensor != nullptr);
-	bool ret = rgbSensorArray.Append(rgbSensor);
+	assert(cameraSensor != nullptr);
+	bool ret = cameraSensorArray.Append(cameraSensor);
 	assert(ret);
 	return ret;
 }
 
-bool RobotSimulatorScene::DeleteRGBSensor(RGBSensor *rgbSensor)
+bool RobotSimulatorScene::DeleteCameraSensor(ICameraSensor *const cameraSensor)
 {
-	assert(rgbSensor != nullptr);
-	bool ret = rgbSensorArray.UnstableErase(rgbSensor);
+	assert(cameraSensor != nullptr);
+	bool ret = cameraSensorArray.UnstableErase(cameraSensor);
 	assert(ret);
 	return ret;
 }
