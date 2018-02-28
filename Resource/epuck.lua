@@ -4736,12 +4736,13 @@ Rigidbody = {
 	Mass = 3
 }
 
-EpuckCameraIdentifier = "1 1 160 120 0.025 500 1.0471975512"
+EpuckCameraIdentifier = "1 -1 160 120 0.025 500 1.0471975512"
 
 Entity_Camera = {
 	Comp = {
 		{"Camera", EpuckCameraIdentifier, "0 1 0 1 0 0 0 0.33333333 0 0"},
-		{"RGBSensor", EpuckCameraIdentifier, "10 1"}
+		{"RGBSensor", EpuckCameraIdentifier, "24 0"},
+		{"DepthSensor", EpuckCameraIdentifier, "24 0 100"}
 	}
 }
 
