@@ -1,83 +1,65 @@
 #include "../Engine/CoolEngine.h"
 
-#include "PyRGBSensor.h"
+#include "PyCameraSensor.h"
 
 using namespace CE;
 
 extern "C"
 {
-	PyObject* _PyRGBSensor::PyNew(PyTypeObject *type, PyObject *args, PyObject *kwds)
+	PyObject* _PyCameraSensor::PyNew(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
-		PyRGBSensor *self = (PyRGBSensor*)type->tp_alloc(type, 0);
-		self->rgbSensor = nullptr;
+		PyCameraSensor *self = (PyCameraSensor*)type->tp_alloc(type, 0);
+		self->cameraSensor = nullptr;
 		return (PyObject*)self;
 	}
 
-	int _PyRGBSensor::PyInit(_PyRGBSensor *self, PyObject *args)
+	int _PyCameraSensor::PyInit(_PyCameraSensor *self, PyObject *args)
 	{
-		PyComponent *pyComp;
-		if (!PyArg_ParseTuple(args, "O", &pyComp))
-		{
-			return -1;
-		}
-		Component<RGBSensor> *compRGBSensor = dynamic_cast<Component<RGBSensor>*>(pyComp->component);
-		if (compRGBSensor == nullptr)
-		{
-			return -1;
-		}
-		self->rgbSensor = (RGBSensor*)**compRGBSensor;
-		if (self->rgbSensor == nullptr)
-		{
-			return -1;
-		}
-		else
-		{
-			return 0;
-		}
+		return -1; // 通过sim.rgbSensor或sim.depthSensor初始化
 	}
 
-	void _PyRGBSensor::PyDel(_PyRGBSensor *self)
+	void _PyCameraSensor::PyDel(_PyCameraSensor *self)
 	{
 		return;
 	}
 
-	PyObject* _PyRGBSensor::PyStr(_PyRGBSensor *self)
+	PyObject* _PyCameraSensor::PyStr(_PyCameraSensor *self)
 	{
 		char str[64] = { 0 };
-		sprintf(str, "rgbSensor@0x%llX", reinterpret_cast<long long>(self->rgbSensor));
+		sprintf(str, "&%s@0x%llX", self->cameraSensor->GetSensorType(), reinterpret_cast<long long>(self->cameraSensor));
 		return PyString_FromString(str);
 	}
 
-	PyObject* _PyRGBSensor::PyRepr(_PyRGBSensor *self)
+	PyObject* _PyCameraSensor::PyRepr(_PyCameraSensor *self)
 	{
 		return PyStr(self);
 	}
 
-	PyObject* _PyRGBSensor::PyIsEnabled(_PyRGBSensor *self)
+	PyObject* _PyCameraSensor::PyIsEnabled(_PyCameraSensor *self)
 	{
-		return PyBool_FromLong(self->rgbSensor->IsEnabled());
+		return PyBool_FromLong(self->cameraSensor->IsEnabled());
 	}
 
-	PyObject* _PyRGBSensor::PySetEnabled(_PyRGBSensor *self, PyObject *args)
+	PyObject* _PyCameraSensor::PySetEnabled(_PyCameraSensor *self, PyObject *args)
 	{
 		int n;
 		if (!PyArg_ParseTuple(args, "i", &n))
 		{
 			return NULL;
 		}
-		self->rgbSensor->SetEnabled(n != 0);
+		self->cameraSensor->SetEnabled(n != 0);
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 
-	PyObject* _PyRGBSensor::PySaveBMP(_PyRGBSensor *self, PyObject *args)
+	PyObject* _PyCameraSensor::PySaveBMP(_PyCameraSensor *self, PyObject *args)
 	{
 		const char *str;
 		if (!PyArg_ParseTuple(args, "s", &str))
 		{
 			return NULL;
 		}
-		bool result = self->rgbSensor->SaveBMP(str);
+		bool result = self->cameraSensor->SaveBMP(str);
 		if (result)
 		{
 			return PyString_FromString(str);
@@ -90,19 +72,19 @@ extern "C"
 	}
 }
 
-PyMemberDef _PyRGBSensor::PyDataMembers[] = {
+PyMemberDef _PyCameraSensor::PyDataMembers[] = {
 	{ NULL, NULL, NULL, 0, NULL }
 };
 
-PyMethodDef _PyRGBSensor::PyMethodMembers[] = {
+PyMethodDef _PyCameraSensor::PyMethodMembers[] = {
 	{ "isEnabled", (PyCFunction)PyIsEnabled, METH_NOARGS },
 	{ "setEnabled", (PyCFunction)PySetEnabled, METH_VARARGS },
 	{ "saveBMP", (PyCFunction)PySaveBMP, METH_VARARGS },
 	{ NULL, NULL }
 };
 
-PyTypeObject _PyRGBSensor::PyClassInfo = {
-	PyVarObject_HEAD_INIT(NULL, 0)"robotsimulator.rgbSensor", /* tp_name */
+PyTypeObject _PyCameraSensor::PyClassInfo = {
+	PyVarObject_HEAD_INIT(NULL, 0)"robotsimulator.cameraSensor", /* tp_name */
 	sizeof(PyComponent), /* tp_basicsize */
 	0, /* tp_itemsize */
 	(destructor)PyDel, /* tp_dealloc */
