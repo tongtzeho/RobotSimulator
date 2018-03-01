@@ -35,7 +35,7 @@ Text_FPS = {
 
 Entity_GlobalSystem = {
 	Child = {
-		{ Config = "@simscene.lua:Entity_FreeCamera", Name = "FreeCamera", Q = "0.5 0 0 0.866025403784", T = "0 60 -50" }
+		{ Config = "@simscene.lua:Entity_FreeCamera", Name = "FreeCamera", Q = "0.5 0 0 0.866025403784", T = "0 20 -20" }
 	},
 	Comp = {
 		{ "Light", "@simscene.lua:Light_Global", "1" },
@@ -53,16 +53,16 @@ Scene = {
 		{ Config = "@platform.lua:Entity", Name = "Platform" },
 		{ Config = "@screen.lua:Entity", Name = "Screen" },
 		--{ Config = "@building.lua:Entity", Name = "Building", S = "2.5 2.5 2.5", Q = "0 1.2 0 -1.2", T = "-14 2.5 26"},
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_1", Q = "0 1 0 1", T = "-50 0 0" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_2", Q = "0 1 0 -1", T = "50 0 0" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_3", Q = "0 0 0 1", T = "0 0 -30" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_4", Q = "0 1 0 0", T = "0 0 30" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_5", Q = "0 0 0 1", T = "0 0 0" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_6", Q = "0 1 0 1", T = "-30 0 0" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_7", Q = "0 1 0 -1", T = "30 0 0" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_8", Q = "0 0 0 1", T = "5 0 -10" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_9", Q = "0 1 0 0", T = "5 0 10" },
-		{ Config = "@epuck.lua:Entity", Name = "Epuck_10", Q = "0 0 0 1", T = "5 0 15" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00001", Q = "0 1 0 1", T = "-50 0 0" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00002", Q = "0 1 0 -1", T = "50 0 0" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00003", Q = "0 0 0 1", T = "0 0 -30" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00004", Q = "0 1 0 0", T = "0 0 30" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00005", Q = "0 0 0 1", T = "0 0 0" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00006", Q = "0 1 0 1", T = "-30 0 0" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00007", Q = "0 1 0 -1", T = "30 0 0" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00008", Q = "0 0 0 1", T = "5 0 -10" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00009", Q = "0 1 0 0", T = "5 0 10" },
+		{ Config = "@epuck2.lua:Entity", Name = "e-puck2_00010", Q = "0 0 0 1", T = "5 0 15" },
 		{ Config = "@box.lua:Entity", Name = "Box_1", T = "-20 0 0" },
 		{ Config = "@box.lua:Entity", Name = "Box_2", T = "-20 0 -2" },
 		{ Config = "@box.lua:Entity", Name = "Box_3", T = "-20 0 2" },
