@@ -1,6 +1,7 @@
 #include "RGBSensor.h"
 #include "DepthSensor.h"
 #include "EpuckRenderer.h"
+#include "LODRenderer.h"
 #include "RobotSimulatorScene.h"
 #include "RobotSimulator.h"
 #include "PyRobotSimulator.h"
@@ -37,6 +38,7 @@ bool RobotSimulator::Init(const char *rootDir)
 
 	/* 添加自定义Renderer */
 	renderMgr->RegisterRenderer("EpuckRenderer", EpuckRenderer::Instancing);
+	renderMgr->RegisterRenderer("LODRenderer", LODRenderer::Instancing);
 
 	/* 创建并加载场景 */
 	scene = new RobotSimulatorScene();
