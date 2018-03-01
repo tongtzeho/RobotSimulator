@@ -297,7 +297,7 @@ technique11 TransparentTech
 		SetGeometryShader( NULL );
 		SetPixelShader( CompileShader(ps_5_0, PS() ) );
 		SetRasterizerState( DefaultRasterizerState );
-		SetBlendState( TransparentBlendState, float4(0.7f, 0.7f, 0.7f, 0.7f), 0xFFFFFFFF );
+		SetBlendState( TransparentBlendState, float4(0.86f, 0.86f, 0.86f, 0.86f), 0xFFFFFFFF );
 		SetDepthStencilState( DefaultDepthStencilState, 0 );
 	}
 }
