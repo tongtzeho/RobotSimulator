@@ -2,6 +2,7 @@
 #include "DepthSensor.h"
 #include "EpuckRenderer.h"
 #include "LODRenderer.h"
+#include "EpuckActionController.h"
 #include "RobotSimulatorScene.h"
 #include "RobotSimulator.h"
 #include "PyRobotSimulator.h"
@@ -11,6 +12,35 @@ using namespace CE;
 RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngine(hInstance)
 {
 	mainWndCaption = L"PKU OSLab Robot Simulator - Cool Engine";
+}
+
+bool RobotSimulator::RegisterActionController(const std::string actionControllerName, IActionController*(*instancingActionControllerFunc)(IComponent*, const void*))
+{
+	unsigned actionControllerNameHash = String::HashString(actionControllerName);
+	std::unordered_map<unsigned, IActionController*(*)(IComponent*, const void*)>::const_iterator iter = instancingActionControllerFuncTable.find(actionControllerNameHash);
+	if (iter == instancingActionControllerFuncTable.end())
+	{
+		instancingActionControllerFuncTable[actionControllerNameHash] = instancingActionControllerFunc;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+IActionController* RobotSimulator::InstancingActionController(const char *actionControllerName, IComponent *const comp, const void *actionControllerParam)
+{
+	assert(actionControllerName != nullptr && comp != nullptr);
+	std::unordered_map<unsigned, IActionController*(*)(IComponent*, const void*)>::const_iterator iter = instancingActionControllerFuncTable.find(String::HashString(actionControllerName));
+	if (iter == instancingActionControllerFuncTable.end())
+	{
+		return nullptr;
+	}
+	else
+	{
+		return iter->second(comp, actionControllerParam);
+	}
 }
 
 void RobotSimulator::InitPython(const char *rootDir)
@@ -29,6 +59,7 @@ bool RobotSimulator::Init(const char *rootDir)
 	/* 添加自定义Component */
 	Entity::RegisterComponent<RGBSensor>("RGBSensor");
 	Entity::RegisterComponent<DepthSensor>("DepthSensor");
+	Entity::RegisterComponent<IActionController>("ActionController");
 
 	ID3D11Device *const d3d11Device = GetDevice();
 	RenderManager *const renderMgr = GetRenderManager();
@@ -39,6 +70,9 @@ bool RobotSimulator::Init(const char *rootDir)
 	/* 添加自定义Renderer */
 	renderMgr->RegisterRenderer("EpuckRenderer", EpuckRenderer::Instancing);
 	renderMgr->RegisterRenderer("LODRenderer", LODRenderer::Instancing);
+
+	/* 添加机器人行动控制器 */
+	RegisterActionController("EpuckActionController", EpuckActionController::Instancing);
 
 	/* 创建并加载场景 */
 	scene = new RobotSimulatorScene();

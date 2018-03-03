@@ -2,7 +2,7 @@
 
 #include "ICameraSensor.h"
 
-typedef struct _PyCameraSensor // RGBSensorå’ŒDepthSensorå…±ç”¨_PyCameraSensor
+typedef struct _PyCameraSensor // RGBSensorºÍDepthSensor¹²ÓÃ_PyCameraSensor
 {
 private:
 	PyObject_HEAD
@@ -15,6 +15,7 @@ public:
 	static PyObject* PyRepr(_PyCameraSensor *self);
 	static PyObject* PyIsEnabled(_PyCameraSensor *self);
 	static PyObject* PySetEnabled(_PyCameraSensor *self, PyObject *args);
+	static PyObject* PyGetData(_PyCameraSensor *self);
 	static PyObject* PySaveBMP(_PyCameraSensor *self, PyObject *args);
 private:
 	static PyMemberDef PyDataMembers[];

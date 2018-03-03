@@ -18,8 +18,7 @@ DepthSensor::DepthSensor(IComponent *comp, const char *cameraIdentifier, const c
 	height = description.Height;
 	width = description.Width;
 	channel = 1;
-	byte = 4;
-	textureData = new unsigned char[height*width*channel*byte];
+	textureData = new unsigned char[height*width*channel*4]; // sizeof(float)=4
 	unsigned tmpU;
 	int tmpD;
 	int ret = sscanf(param, "%u %d %f", &tmpU, &tmpD, &farZ);

@@ -2,6 +2,7 @@
 #include "DepthSensor.h"
 
 #include "PyCameraSensor.h"
+#include "PyActionController.h"
 #include "PyRobotSimulator.h"
 
 using namespace CE;
@@ -66,6 +67,11 @@ void PyRobotSimulator::Initialize()
 	int ready = PyType_Ready(const_cast<PyTypeObject*>(PyCameraSensor::GetPyClassInfo()));
 	assert(ready >= 0);
 	Py_INCREF(const_cast<PyTypeObject*>(PyCameraSensor::GetPyClassInfo()));
+
+	ready = PyType_Ready(const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
+	assert(ready >= 0);
+	Py_INCREF(const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
+	PyModule_AddObject(simModule, "actionController", (PyObject*)const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
 
 	PyRun_SimpleString("import robotsimulator");
 }

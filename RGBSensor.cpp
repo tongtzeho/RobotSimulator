@@ -18,8 +18,7 @@ RGBSensor::RGBSensor(IComponent *comp, const char *cameraIdentifier, const char 
 	height = description.Height;
 	width = description.Width;
 	channel = 4;
-	byte = 4;
-	textureData = new unsigned char[height*width*channel*byte];
+	textureData = new unsigned char[height*width*channel*4]; // sizeof(float)=4
 }
 
 unsigned char* RGBSensor::GetBMPPixels() const

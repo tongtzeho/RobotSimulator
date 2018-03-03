@@ -13,7 +13,6 @@ protected:
 	unsigned height;
 	unsigned width;
 	unsigned channel; // RGBSensor有4个Channel，DepthSensor有1个Channel
-	unsigned byte; // sizeof(float)/sizeof(unsigned)
 	float samplePeriod; // 采样率的倒数。采样率表示一秒中采样的次数。如果当前时间和上次采样的时间的间隔小于采样率的倒数，则不采样
 	float lastSampleTime; // 上次采样的时间
 	bool enabled;
@@ -29,12 +28,12 @@ public:
 	virtual bool Sample(); // 把Texture的每个Pixel从GPU复制到CPU，最后存入textureData
 	inline bool IsEnabled() const { return enabled; }
 	inline void SetEnabled(const bool enabled) { this->enabled = enabled; }
-	inline const void *GetTextureData(unsigned &outHeight, unsigned &outWidth, unsigned &outChannel)
+	inline const float *GetTextureData(unsigned &outHeight, unsigned &outWidth, unsigned &outChannel)
 	{
 		outHeight = height;
 		outWidth = width;
 		outChannel = channel;
-		return textureData;
+		return reinterpret_cast<const float*>(textureData);
 	}
 	bool SaveBMP(const char *bmpFile) const; // 把当前的textureData保存为bmp图片（调试使用），保存规则由GetBMPPixels定义
 };

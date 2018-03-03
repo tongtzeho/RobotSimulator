@@ -15,7 +15,7 @@ extern "C"
 
 	int _PyCameraSensor::PyInit(_PyCameraSensor *self, PyObject *args)
 	{
-		return -1; // é€šè¿‡sim.rgbSensoræˆ–sim.depthSensoråˆå§‹åŒ–
+		return -1; // Í¨¹ýsim.rgbSensor»òsim.depthSensor³õÊ¼»¯
 	}
 
 	void _PyCameraSensor::PyDel(_PyCameraSensor *self)
@@ -52,6 +52,38 @@ extern "C"
 		return Py_None;
 	}
 
+	PyObject* _PyCameraSensor::PyGetData(_PyCameraSensor *self)
+	{
+		unsigned height;
+		unsigned width;
+		unsigned channel;
+		const float *textureData = self->cameraSensor->GetTextureData(height, width, channel);
+		PyObject *pyList;
+		pyList = PyList_New(height);
+		for (unsigned i = 0; i < height; ++i)
+		{
+			PyObject *rowData = PyList_New(width);
+			for (unsigned j = 0; j < width; ++j)
+			{
+				if (channel == 1)
+				{
+					PyList_SetItem(rowData, j, PyFloat_FromDouble(Math::Clamp(textureData[i*width + j], 0.0f, 1.0f)));
+				}
+				else
+				{
+					PyObject *pixel = PyList_New(channel);
+					for (unsigned k = 0; k < channel; ++k)
+					{
+						PyList_SetItem(pixel, k, PyFloat_FromDouble(Math::Clamp(textureData[(i*width + j)*channel + k], 0.0f, 1.0f)));
+					}
+					PyList_SetItem(rowData, j, pixel);
+				}
+			}
+			PyList_SetItem(pyList, i, rowData);
+		}
+		return pyList;
+	}
+
 	PyObject* _PyCameraSensor::PySaveBMP(_PyCameraSensor *self, PyObject *args)
 	{
 		const char *str;
@@ -79,6 +111,7 @@ PyMemberDef _PyCameraSensor::PyDataMembers[] = {
 PyMethodDef _PyCameraSensor::PyMethodMembers[] = {
 	{ "isEnabled", (PyCFunction)PyIsEnabled, METH_NOARGS },
 	{ "setEnabled", (PyCFunction)PySetEnabled, METH_VARARGS },
+	{ "getData", (PyCFunction)PyGetData, METH_NOARGS },
 	{ "saveBMP", (PyCFunction)PySaveBMP, METH_VARARGS },
 	{ NULL, NULL }
 };

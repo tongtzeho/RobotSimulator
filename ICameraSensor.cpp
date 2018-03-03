@@ -2,7 +2,7 @@
 
 using namespace CE;
 
-ICameraSensor::ICameraSensor(CE::IComponent *comp, const char *cameraIdentifier, const char *param) : camera(nullptr), textureSrc(0), textureDest(0), textureData(nullptr), height(0), width(0), enabled(false), byte(0)
+ICameraSensor::ICameraSensor(CE::IComponent *comp, const char *cameraIdentifier, const char *param) : camera(nullptr), textureSrc(0), textureDest(0), textureData(nullptr), height(0), width(0), enabled(false)
 {
 	Component<Camera> *compCamera = dynamic_cast<Component<Camera>*>(Entity::GetComponent<Camera>(comp->GetEntity(), cameraIdentifier));
 	if (compCamera != nullptr)
@@ -50,7 +50,7 @@ bool ICameraSensor::Sample()
 			unsigned j = 0;
 			for (unsigned i = 0; i < height; ++i)
 			{
-				memcpy(textureData + (j * byte), source, width * channel * byte);
+				memcpy(textureData + (j * 4), source, width * channel * 4);
 				source += pitch;
 				j += width * channel;
 			}
