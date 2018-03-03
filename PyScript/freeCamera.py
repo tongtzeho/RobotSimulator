@@ -4,7 +4,7 @@ import math
 class freeCamera:
 	def __init__(self, entity, param = None):
 		self.entity = entity
-		self.speed = 30.0
+		self.speed = 15.0
 		self.angleSpeedX = 256.0
 		self.angleSpeedY = 144.0
 	
