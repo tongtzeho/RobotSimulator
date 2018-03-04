@@ -1,13 +1,13 @@
 Material_Body = {
-	0.4, 0.4, 0.4, 1.0,
-	0.8, 0.8, 0.8, 1.0,
+	0.3, 0.3, 0.3, 1.0,
+	0.7, 0.7, 0.7, 1.0,
 	0.4, 0.4, 0.4, 8.0,
 	0.0, 0.0, 0.0, 0.0
 }
 
 Material_Wheel = {
-	0.4, 0.4, 0.4, 1.0,
-	0.8, 0.8, 0.8, 1.0,
+	0.3, 0.3, 0.3, 1.0,
+	0.7, 0.7, 0.7, 1.0,
 	0.4, 0.4, 0.4, 8.0,
 	0.0, 0.0, 0.0, 0.0
 }
@@ -19,7 +19,6 @@ Entity_Wheel = {
 		{"Material", "@epuck2.lua:Material_Wheel"},
 		{"Texture", "DiffuseMap", "@epuck2.png"},
 		{"Renderer", "LODRenderer", "1 1 30"},
-		{"Script", "epuck_wheel"}
 	}
 }
 
@@ -31,10 +30,17 @@ Collider_Proximity = {
 	Mask = 0x3FFFFFFF,
 }
 
+Collider_OnGround = {
+	Shape = "box 0.4 0.05 0.4",
+	Trigger = true,
+	Group = 0x40000000,
+	Mask = 0x3FFFFFFF
+}
+
 Rigidbody = {
 	Shape = "cylinder 3.625 2.12",
 	T = "0 2.12 0",
-	Mass = 3
+	Mass = 3,
 }
 
 EpuckCameraIdentifier = "1 -1 160 120 0.05 500 1.0471975512"
@@ -42,8 +48,8 @@ EpuckCameraIdentifier = "1 -1 160 120 0.05 500 1.0471975512"
 Entity_Camera = {
 	Comp = {
 		{"Camera", EpuckCameraIdentifier, "0 1 0 1 0 0 0 0.33333333 0 0"},
-		{"RGBSensor", EpuckCameraIdentifier, "24 0"},
-		{"DepthSensor", EpuckCameraIdentifier, "24 0 100"}
+		{"RGBSensor", EpuckCameraIdentifier, "8 0"},
+		{"DepthSensor", EpuckCameraIdentifier, "8 0 100"}
 	}
 }
 
@@ -58,7 +64,9 @@ Entity = {
 		{"Texture", "DiffuseMap", "@epuck2.png"},
 		{"Renderer", "EpuckRenderer", "1 1 1050"},
 		{"Collider", "@epuck2.lua:Collider_Proximity"},
+		{"Collider", "@epuck2.lua:Collider_OnGround"},
 		{"Rigidbody", "@epuck2.lua:Rigidbody"},
 		{"Renderer", "ColliderRenderer", "1 0 0 1"},
+		{"ActionController", "EpuckActionController", "3 1.6"}
 	}
 }
