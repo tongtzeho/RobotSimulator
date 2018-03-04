@@ -2,8 +2,13 @@
 
 using namespace CE;
 
-EpuckActionController::EpuckActionController(IComponent *const comp, const void *param) : IActionController(comp), rigidbody(nullptr), wheel(nullptr)
+EpuckActionController::EpuckActionController(IComponent *const comp, const void *param) : IActionController(comp), colliderOnGround(nullptr), rigidbody(nullptr), wheel(nullptr)
 {
+	Component<Collider> *compColliderOnGround = dynamic_cast<Component<Collider>*>(Entity::GetComponent<Collider>(comp->GetEntity(), "@epuck2.lua:Collider_OnGround"));
+	if (compColliderOnGround != nullptr)
+	{
+		colliderOnGround = (Collider*)**compColliderOnGround;
+	}
 	Component<Rigidbody> *compRigidbody = dynamic_cast<Component<Rigidbody>*>(Entity::GetComponent<Rigidbody>(comp->GetEntity()));
 	if (compRigidbody != nullptr)
 	{
@@ -20,11 +25,25 @@ IActionController *EpuckActionController::Instancing(IComponent *const comp, con
 	return new EpuckActionController(comp, param);
 }
 
+bool EpuckActionController::IsOutOfControl() const
+{
+	if (abs(GetComponent()->GetEntity()->GetEulerAngle().z) >= 0.05f)
+	{
+		return true;
+	}
+	else
+	{
+		std::vector<const CollisionDetectionResult::Manifold*> manifolds;
+		CoolEngine::Instance()->GetPhysicsManager()->QueryWorld(colliderOnGround, manifolds);
+		return manifolds.size() <= 1; // 除了本身之外，如果底盘还有与其他物体碰撞（如地面），则认为没有失控
+	}
+}
+
 void EpuckActionController::Action(const float dt) const
 {
 	const float friction = 100.0f;
 	const float wheelDiameter = 4.1f;
-	if (abs(GetComponent()->GetEntity()->GetEulerAngle().z) < 0.05f)
+	if (!IsOutOfControl()) // 没有失控（在平台或地面上）的情况下，可以用行动控制器的运动参数控制机器人，否则由物理引擎当作一般的刚体进行动力学模拟
 	{
 		Vector3 tangentDir(Vector3(0, 0, 1)*GetComponent()->GetEntity()->GetRotationMatrix());
 		Vector3 velocityW(rigidbody->GetVelocity());
@@ -41,6 +60,7 @@ void EpuckActionController::Action(const float dt) const
 		rigidbody->SetVelocity(tangentDir*velocityTangentScalar + velocityNormal);
 		wheel->Rotate(Quaternion(sin(velocityTangentScalar*dt / wheelDiameter), 0, 0, cos(velocityTangentScalar*dt / wheelDiameter)));
 		Vector3 omega(rigidbody->GetOmega());
+		omega.x = omega.z = 0;
 		if (GetActionState() & 0x8)
 		{
 			if (GetActionState() & 0x4)
