@@ -2,6 +2,8 @@
 #include "DepthSensor.h"
 
 #include "PyCameraSensor.h"
+#include "PyDistanceSensor.h"
+#include "PyProximitySensor.h"
 #include "PyActionController.h"
 #include "PyRobotSimulator.h"
 
@@ -67,6 +69,16 @@ void PyRobotSimulator::Initialize()
 	int ready = PyType_Ready(const_cast<PyTypeObject*>(PyCameraSensor::GetPyClassInfo()));
 	assert(ready >= 0);
 	Py_INCREF(const_cast<PyTypeObject*>(PyCameraSensor::GetPyClassInfo()));
+
+	ready = PyType_Ready(const_cast<PyTypeObject*>(PyDistanceSensor::GetPyClassInfo()));
+	assert(ready >= 0);
+	Py_INCREF(const_cast<PyTypeObject*>(PyDistanceSensor::GetPyClassInfo()));
+	PyModule_AddObject(simModule, "distanceSensor", (PyObject*)const_cast<PyTypeObject*>(PyDistanceSensor::GetPyClassInfo()));
+
+	ready = PyType_Ready(const_cast<PyTypeObject*>(PyProximitySensor::GetPyClassInfo()));
+	assert(ready >= 0);
+	Py_INCREF(const_cast<PyTypeObject*>(PyProximitySensor::GetPyClassInfo()));
+	PyModule_AddObject(simModule, "proximitySensor", (PyObject*)const_cast<PyTypeObject*>(PyProximitySensor::GetPyClassInfo()));
 
 	ready = PyType_Ready(const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
 	assert(ready >= 0);

@@ -1,5 +1,7 @@
 #include "RGBSensor.h"
 #include "DepthSensor.h"
+#include "DistanceSensor.h"
+#include "ProximitySensor.h"
 #include "EpuckRenderer.h"
 #include "LODRenderer.h"
 #include "EpuckActionController.h"
@@ -59,6 +61,8 @@ bool RobotSimulator::Init(const char *rootDir)
 	/* 添加自定义Component */
 	Entity::RegisterComponent<RGBSensor>("RGBSensor");
 	Entity::RegisterComponent<DepthSensor>("DepthSensor");
+	Entity::RegisterComponent<DistanceSensor>("DistanceSensor");
+	Entity::RegisterComponent<ProximitySensor>("ProximitySensor");
 	Entity::RegisterComponent<IActionController>("ActionController");
 
 	ID3D11Device *const d3d11Device = GetDevice();
