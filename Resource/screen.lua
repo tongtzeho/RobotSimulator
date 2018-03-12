@@ -22,7 +22,7 @@ Entity = {
 	Comp = {
 		{"Mesh", "@screen.lua:Mesh"},
 		{"Material", "@screen.lua:Material"},
-		{"Texture", "DiffuseMap", "@screen.dds"},
+		{"Texture", "DiffuseMap", "@follow_line.png"},
 		{"Renderer", "MeshRenderer", "0 1"}
 	}
 }
