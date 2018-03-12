@@ -3,20 +3,29 @@ import robotsimulator as sim
 import random
 
 """
-EpuckName = "e-puck2_00001"
+epuckNameRe = "e-puck2_[0-9]+"
 import coolengine as ce
-ce.findEntity(EpuckName).addComponent("Script", "epuck_follow_line")
+for e in ce.matchEntities(epuckNameRe):
+  e.addComponent("Script", "epuck_follow_line", "0")
+
+epuck01Name = ce.findEntity("e-puck2_00001")
+ce.script(epuck01Name.getComponent("Script", "epuck_follow_line")).awake()
 """
 
 class epuck_follow_line:
 	def __init__(self, entity, param = None):
 		self.entity = entity
+		self.isAwake = bool(int(param))
 	
 	def start(self, param = None):
 		self.rgbSensor = sim.rgbSensor(self.entity.findChildEntity("Epuck2Camera").getComponent("RGBSensor"))
 		self.rgbSensor.setEnabled(True)
 		self.actionController = sim.actionController(self.entity.getComponent("ActionController"))
-		self.randomThreshold = 0.7
+		self.ir0 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR0").getComponent("ProximitySensor"))
+		self.ir1 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR1").getComponent("ProximitySensor"))
+		self.ir6 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR6").getComponent("ProximitySensor"))
+		self.ir7 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR7").getComponent("ProximitySensor"))
+		self.randomThreshold = 0.85
 	
 	def getStateFromRGBSensor(self):
 		pixels = self.rgbSensor.getData()
@@ -31,9 +40,10 @@ class epuck_follow_line:
 		right = 0
 		for i in range(int(width*0.6), int(width*0.8)):
 			right += bottom[i][0]
-		if random.random() > self.randomThreshold:
-			leftPossi = left/(left+mid+right)
-			midPossi = mid/(left+mid+right)
+		sum = left+mid+right
+		if sum > 0 and random.random() > self.randomThreshold:
+			leftPossi = left/sum
+			midPossi = mid/sum
 			rightPossi = 1-leftPossi-midPossi
 			rand = random.random()
 			if rand <= leftPossi:
@@ -51,4 +61,14 @@ class epuck_follow_line:
 				return 13
 	
 	def step(self, dt, param = None):
-		self.actionController.setState(self.getStateFromRGBSensor())
+		if self.isAwake:
+			if self.ir0.getData() or self.ir1.getData() or self.ir6.getData() or self.ir7.getData():
+				self.isAwake = False
+				self.actionController.setState(0)
+			else:
+				self.actionController.setState(self.getStateFromRGBSensor())
+		else:
+			self.actionController.setState(0)
+			
+	def awake(self):
+		self.isAwake = True
