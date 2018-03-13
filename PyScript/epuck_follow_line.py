@@ -25,6 +25,7 @@ class epuck_follow_line:
 		self.ir1 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR1").getComponent("ProximitySensor"))
 		self.ir6 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR6").getComponent("ProximitySensor"))
 		self.ir7 = sim.proximitySensor(self.entity.findChildEntity("Epuck2IR7").getComponent("ProximitySensor"))
+		self.comm = sim.communicator(self.entity.getComponent("Communicator"))
 		self.randomThreshold = 0.85
 	
 	def getStateFromRGBSensor(self):
@@ -62,13 +63,16 @@ class epuck_follow_line:
 	
 	def step(self, dt, param = None):
 		if self.isAwake:
-			if self.ir0.getData() or self.ir1.getData() or self.ir6.getData() or self.ir7.getData():
+			if False:#self.ir0.getData() or self.ir1.getData() or self.ir6.getData() or self.ir7.getData():
 				self.isAwake = False
 				self.actionController.setState(0)
+				self.comm.send("Go")
 			else:
 				self.actionController.setState(self.getStateFromRGBSensor())
 		else:
 			self.actionController.setState(0)
+			if len(self.comm.read()):
+				self.isAwake = True
 			
 	def awake(self):
 		self.isAwake = True
