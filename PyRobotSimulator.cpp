@@ -5,7 +5,10 @@
 #include "PyDistanceSensor.h"
 #include "PyProximitySensor.h"
 #include "PyActionController.h"
+#include "PyCommunicator.h"
 #include "PyRobotSimulator.h"
+
+#include "RobotSimulatorScene.h"
 
 using namespace CE;
 
@@ -50,11 +53,37 @@ extern "C"
 		Py_XDECREF(pyCameraSensor);
 		return ret;
 	}
+
+	PyObject* PyRobotSimulator::PyGetUnsafe(PyObject *self)
+	{
+		RobotSimulatorScene *simScene = dynamic_cast<RobotSimulatorScene*>(CoolEngine::Instance()->GetCurrentScene());
+		if (simScene != nullptr)
+		{
+			const std::vector<IActionController*> &unsafe = simScene->GetActionSystem().GetUnsafeResult();
+			PyObject *pyList;
+			pyList = PyList_New(unsafe.size());
+			for (size_t i = 0; i < unsafe.size(); ++i)
+			{
+				PyEntity *pyEntity = (PyEntity*)_PyObject_New(const_cast<PyTypeObject*>(PyEntity::GetPyClassInfo()));
+				pyEntity->entity = unsafe[i]->GetComponent()->GetEntity();
+				PyObject *item = Py_BuildValue("O", pyEntity);
+				Py_XDECREF(pyEntity);
+				PyList_SetItem(pyList, i, item);
+			}
+			return pyList;
+		}
+		else
+		{
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+	}
 }
 
 PyMethodDef PyRobotSimulator::pyMethods[] = {
 	{ "rgbSensor", (PyCFunction)PyRGBSensor, METH_VARARGS },
 	{ "depthSensor", (PyCFunction)PyDepthSensor, METH_VARARGS },
+	{ "getUnsafe", (PyCFunction)PyGetUnsafe, METH_NOARGS },
 	{ NULL, NULL }
 };
 
@@ -84,6 +113,11 @@ void PyRobotSimulator::Initialize()
 	assert(ready >= 0);
 	Py_INCREF(const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
 	PyModule_AddObject(simModule, "actionController", (PyObject*)const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
+
+	ready = PyType_Ready(const_cast<PyTypeObject*>(PyCommunicator::GetPyClassInfo()));
+	assert(ready >= 0);
+	Py_INCREF(const_cast<PyTypeObject*>(PyCommunicator::GetPyClassInfo()));
+	PyModule_AddObject(simModule, "communicator", (PyObject*)const_cast<PyTypeObject*>(PyCommunicator::GetPyClassInfo()));
 
 	PyRun_SimpleString("import robotsimulator");
 }

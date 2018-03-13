@@ -64,6 +64,7 @@ bool RobotSimulator::Init(const char *rootDir)
 	Entity::RegisterComponent<DistanceSensor>("DistanceSensor");
 	Entity::RegisterComponent<ProximitySensor>("ProximitySensor");
 	Entity::RegisterComponent<IActionController>("ActionController");
+	Entity::RegisterComponent<Communicator>("Communicator");
 
 	ID3D11Device *const d3d11Device = GetDevice();
 	RenderManager *const renderMgr = GetRenderManager();

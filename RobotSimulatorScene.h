@@ -4,13 +4,16 @@
 
 #include "ICameraSensor.h"
 #include "IActionController.h"
+#include "CommunicationSystem.h"
+#include "ActionSystem.h"
 
 class RobotSimulatorScene : public CE::Scene
 {
 private:
 	virtual void RenderObjects(void *const param = nullptr);
 	CE::UnstableHashArray<ICameraSensor*> cameraSensorArray;
-	CE::UnstableHashArray<IActionController*> actionControllerArray;
+	CommunicationSystem communicationSys;
+	ActionSystem actionSys;
 public:
 	RobotSimulatorScene() = default;
 	virtual ~RobotSimulatorScene() = default;
@@ -19,6 +22,6 @@ public:
 	virtual void PostRender(void *const param = nullptr);
 	bool AppendCameraSensor(ICameraSensor *const cameraSensor);
 	bool DeleteCameraSensor(ICameraSensor *const cameraSensor);
-	bool AppendActionController(IActionController *const actionController);
-	bool DeleteActionController(IActionController *const actionController);
+	inline CommunicationSystem& GetCommunicationSystem() { return communicationSys; }
+	inline ActionSystem& GetActionSystem() { return actionSys; }
 };

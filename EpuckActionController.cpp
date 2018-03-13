@@ -39,6 +39,13 @@ bool EpuckActionController::IsOutOfControl() const
 	}
 }
 
+bool EpuckActionController::IsCrashed() const
+{
+	std::vector<const CollisionDetectionResult::Manifold*> manifolds;
+	CoolEngine::Instance()->GetPhysicsManager()->QueryWorld(rigidbody, manifolds);
+	return manifolds.size() >= 3; // 除了底盘的碰撞探测器和接触的地面/平台外，如果还有与其他物体碰撞，则认为发生了碰撞
+}
+
 void EpuckActionController::Action(const float dt) const
 {
 	const float friction = 100.0f;

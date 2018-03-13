@@ -14,6 +14,7 @@ private:
 	static bool initialized;
 	static PyObject* PyRGBSensor(PyObject *self, PyObject* args); // 返回一个PyCameraSensor，指向的cameraSensor是RGBSensor
 	static PyObject* PyDepthSensor(PyObject *self, PyObject* args); // 返回一个PyCameraSensor，指向的cameraSensor是DepthSensor
+	static PyObject* PyGetUnsafe(PyObject *self);
 	static PyMethodDef pyMethods[];
 public:
 	static void Initialize();

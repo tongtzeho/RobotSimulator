@@ -14,7 +14,7 @@ template<> Component<IActionController>::Component(Entity *const belong, const c
 		RobotSimulatorScene *simScene = dynamic_cast<RobotSimulatorScene*>(CoolEngine::Instance()->GetCurrentScene());
 		if (simScene != nullptr)
 		{
-			simScene->AppendActionController(data);
+			simScene->GetActionSystem().Append(data);
 		}
 	}
 }
@@ -24,7 +24,7 @@ template<> Component<IActionController>::~Component()
 	RobotSimulatorScene *simScene = dynamic_cast<RobotSimulatorScene*>(CoolEngine::Instance()->GetCurrentScene());
 	if (simScene != nullptr)
 	{
-		simScene->DeleteActionController(data);
+		simScene->GetActionSystem().Delete(data);
 	}
 	if (data != nullptr)
 	{

@@ -12,9 +12,10 @@ private:
 	float velocity;
 	float omega;
 	EpuckActionController(CE::IComponent *const comp, const void *param = nullptr);
-	bool IsOutOfControl() const;
 public:
 	static IActionController *Instancing(CE::IComponent *const comp, const void *param = nullptr);
 	virtual inline const char *GetActionControllerName() const { return "EpuckActionRenderer"; }
+	virtual bool IsOutOfControl() const;
+	virtual bool IsCrashed() const;
 	virtual void Action(const float dt) const;
 };

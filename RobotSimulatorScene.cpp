@@ -36,15 +36,14 @@ void RobotSimulatorScene::RenderObjects(void *const param)
 void RobotSimulatorScene::Step(const float dt, void *const param)
 {
 	assert(state == ReadyToUpdate || state == ReadyToRender || state == ReadyToDraw || state == ReadyToPostRender);
+	communicationSys.UpdatePositions();
 	for (size_t i = 0; i < scriptArray.Size(); ++i)
 	{
 		scriptArray[i]->Step(dt, (const char*)param);
 	}
-	for (size_t i = 0; i < actionControllerArray.Size(); ++i)
-	{
-		actionControllerArray[i]->Action(dt);
-	}
+	actionSys.Action(dt);
 	CoolEngine::Instance()->GetPhysicsManager()->Step(dt);
+	actionSys.SafetyVerification();
 }
 
 void RobotSimulatorScene::PreRender(void *const param)
@@ -78,22 +77,6 @@ bool RobotSimulatorScene::DeleteCameraSensor(ICameraSensor *const cameraSensor)
 {
 	assert(cameraSensor != nullptr);
 	bool ret = cameraSensorArray.UnstableErase(cameraSensor);
-	assert(ret);
-	return ret;
-}
-
-bool RobotSimulatorScene::AppendActionController(IActionController *const actionController)
-{
-	assert(actionController != nullptr);
-	bool ret = actionControllerArray.Append(actionController);
-	assert(ret);
-	return ret;
-}
-
-bool RobotSimulatorScene::DeleteActionController(IActionController *const actionController)
-{
-	assert(actionController != nullptr);
-	bool ret = actionControllerArray.UnstableErase(actionController);
 	assert(ret);
 	return ret;
 }
