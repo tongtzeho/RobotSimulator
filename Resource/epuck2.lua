@@ -114,6 +114,7 @@ Entity = {
 		{"Collider", "@epuck2.lua:Collider_OnGround"},
 		{"Rigidbody", "@epuck2.lua:Rigidbody"},
 		{"Renderer", "ColliderRenderer", "1 0 0 1"},
-		{"ActionController", "EpuckActionController", "3 1.6"}
+		{"ActionController", "EpuckActionController", "3 1.6"},
+		{"Communicator"},
 	}
 }

@@ -33,6 +33,12 @@ Text_FPS = {
 	Depth = 15
 }
 
+Text_Safety = {
+	Rect = "0 0 0 0 7 60 0 0.35 0 161",
+	Color = "0 0 1 1",
+	Depth = 15
+}
+
 Entity_GlobalSystem = {
 	Child = {
 		{ Config = "@simscene.lua:Entity_FreeCamera", Name = "FreeCamera", Q = "0.5 0 0 0.866025403784", T = "0 20 -20" }
@@ -41,6 +47,8 @@ Entity_GlobalSystem = {
 		{ "Light", "@simscene.lua:Light_Global", "1" },
 		{ "Text", "FPS", "@simscene.lua:Text_FPS" },
 		{ "Script", "fpsInfo" },
+		{ "Text", "Safety", "@simscene.lua:Text_Safety" },
+		{ "Script", "safetyInfo" },
 		{ "Script", "switchOnGUICamera" }
 	}
 }
