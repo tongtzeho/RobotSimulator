@@ -63,7 +63,7 @@ class epuck_follow_line:
 	
 	def step(self, dt, param = None):
 		if self.isAwake:
-			if False:#self.ir0.getData() or self.ir1.getData() or self.ir6.getData() or self.ir7.getData():
+			if self.ir0.getData() or self.ir1.getData() or self.ir6.getData() or self.ir7.getData():
 				self.isAwake = False
 				self.actionController.setState(0)
 				self.comm.send("Go")
