@@ -3,7 +3,10 @@ import robotsimulator as sim
 
 class safetyInfo:
 	def __init__(self, entity, param = None):
-		self.text = ce.text(entity.getComponent("Text", "Safety"))
+		self.entity = entity
+		
+	def start(self):
+		self.text = ce.text(self.entity.getComponent("Text", "Safety"))
 	
 	def update(self, dt, param = None):
 		unsafe = sim.getUnsafe()
@@ -14,3 +17,5 @@ class safetyInfo:
 			for ue in unsafe:
 				content += ue.getName()+"\n"
 			self.text.setContent(content)
+
+			
