@@ -2,7 +2,7 @@
 
 using namespace CE;
 
-EpuckActionController::EpuckActionController(IComponent *const comp, const void *param) : IActionController(comp), colliderOnGround(nullptr), rigidbody(nullptr), wheel(nullptr)
+EpuckActionController::EpuckActionController(IComponent *const comp, const void *param) : IActionController(comp, 3), colliderOnGround(nullptr), rigidbody(nullptr), wheel(nullptr), communicator(nullptr)
 {
 	Component<Collider> *compColliderOnGround = dynamic_cast<Component<Collider>*>(Entity::GetComponent<Collider>(comp->GetEntity(), "@epuck2.lua:Collider_OnGround"));
 	if (compColliderOnGround != nullptr)
@@ -14,10 +14,14 @@ EpuckActionController::EpuckActionController(IComponent *const comp, const void 
 	{
 		rigidbody = (Rigidbody*)**compRigidbody;
 	}
+	Component<Communicator> *compCommunicator = dynamic_cast<Component<Communicator>*>(Entity::GetComponent<Communicator>(comp->GetEntity()));
+	if (compCommunicator != nullptr)
+	{
+		communicator = (Communicator*)**compCommunicator;
+	}
 	wheel = comp->GetEntity()->FindChildEntity("Epuck2Wheel");
-	int ret = sscanf((const char*)param, "%f %f", &velocity, &omega);
+	int ret = sscanf((const char*)param, "%f %f", &maxVelocity, &maxOmega);
 	assert(ret == 2);
-	SetActionState(0);
 }
 
 IActionController *EpuckActionController::Instancing(IComponent *const comp, const void *param)
@@ -63,26 +67,17 @@ void EpuckActionController::Action(const float dt) const
 			velocityNormalScalar = max(0, velocityNormalScalar - friction * dt);
 			velocityNormal = normalDir*velocityNormalScalar;
 		}
-		velocityTangentScalar = max(velocity*(GetActionState() & 0x3), velocityTangentScalar - friction * dt);
+		const float velocity = Math::Clamp(GetActionState(0), -maxVelocity, maxVelocity);
+		velocityTangentScalar = max(velocity, velocityTangentScalar - friction * dt);
 		rigidbody->SetVelocity(tangentDir*velocityTangentScalar + velocityNormal);
 		wheel->Rotate(Quaternion(sin(velocityTangentScalar*dt / wheelDiameter), 0, 0, cos(velocityTangentScalar*dt / wheelDiameter)));
 		Vector3 omega(rigidbody->GetOmega());
 		omega.x = omega.z = 0;
-		if (GetActionState() & 0x8)
-		{
-			if (GetActionState() & 0x4)
-			{
-				omega.y = this->omega;
-			}
-			else
-			{
-				omega.y = -this->omega;
-			}
-		}
-		else
-		{
-			omega.y = 0;
-		}
+		omega.y = Math::Clamp(GetActionState(1), -maxOmega, maxOmega);
 		rigidbody->SetOmega(omega);
+	}
+	if (GetActionState(2) != 0.0f)
+	{
+		communicator->Send("1");
 	}
 }

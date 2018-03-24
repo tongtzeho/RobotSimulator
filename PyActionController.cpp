@@ -51,19 +51,55 @@ extern "C"
 		return PyStr(self);
 	}
 
-	PyObject* _PyActionController::PyGetState(_PyActionController *self)
-	{
-		return PyLong_FromUnsignedLong(self->actionController->GetActionState());
-	}
-
-	PyObject* _PyActionController::PySetState(_PyActionController *self, PyObject *args)
+	PyObject* _PyActionController::PyGetState(_PyActionController *self, PyObject *args)
 	{
 		unsigned n;
 		if (!PyArg_ParseTuple(args, "I", &n))
 		{
 			return NULL;
 		}
-		self->actionController->SetActionState(n);
+		return PyFloat_FromDouble(self->actionController->GetActionState(n));
+	}
+
+	PyObject* _PyActionController::PyGetStates(_PyActionController *self)
+	{
+		const std::vector<float> &states = self->actionController->GetActionState();
+		PyObject *pyList;
+		pyList = PyList_New(states.size());
+		for (size_t i = 0; i < states.size(); ++i)
+		{
+			PyList_SetItem(pyList, i, PyFloat_FromDouble(states[i]));
+		}
+		return pyList;
+	}
+
+	PyObject* _PyActionController::PySetState(_PyActionController *self, PyObject *args)
+	{
+		unsigned n;
+		float state;
+		if (!PyArg_ParseTuple(args, "If", &n, &state))
+		{
+			return NULL;
+		}
+		self->actionController->SetActionState(n, state);
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	PyObject* _PyActionController::PySetStates(_PyActionController *self, PyObject *args)
+	{
+		PyObject *list;
+		if (!PyArg_ParseTuple(args, "O", &list))
+		{
+			return NULL;
+		}
+		size_t n = PyList_Size(list);
+		std::vector<float> states(n, 0);
+		for (size_t i = 0; i < n; ++i)
+		{
+			states[i] = static_cast<float>(PyFloat_AsDouble(PyList_GetItem(list, i)));
+		}
+		self->actionController->SetActionState(states);
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
@@ -74,8 +110,10 @@ PyMemberDef _PyActionController::PyDataMembers[] = {
 };
 
 PyMethodDef _PyActionController::PyMethodMembers[] = {
-	{ "getState", (PyCFunction)PyGetState, METH_NOARGS },
+	{ "getState", (PyCFunction)PyGetState, METH_VARARGS },
+	{ "getStates", (PyCFunction)PyGetStates, METH_NOARGS },
 	{ "setState", (PyCFunction)PySetState, METH_VARARGS },
+	{ "setStates", (PyCFunction)PySetStates, METH_VARARGS },
 	{ NULL, NULL }
 };
 

@@ -2,18 +2,25 @@
 #include "DepthSensor.h"
 #include "DistanceSensor.h"
 #include "ProximitySensor.h"
+#include "IMUSensor.h"
 #include "EpuckRenderer.h"
 #include "LODRenderer.h"
 #include "EpuckActionController.h"
 #include "RobotSimulatorScene.h"
 #include "RobotSimulator.h"
 #include "PyRobotSimulator.h"
+#include "SocketServerConsole.h"
 
 using namespace CE;
 
 RobotSimulator::RobotSimulator(HINSTANCE hInstance) : CoolEngine(hInstance)
 {
 	mainWndCaption = L"PKU OSLab Robot Simulator - Cool Engine";
+}
+
+RobotSimulator::~RobotSimulator()
+{
+	SocketServerConsole::Destroy();
 }
 
 bool RobotSimulator::RegisterActionController(const std::string actionControllerName, IActionController*(*instancingActionControllerFunc)(IComponent*, const void*))
@@ -49,6 +56,7 @@ void RobotSimulator::InitPython(const char *rootDir)
 {
 	CoolEngine::InitPython(rootDir);
 	PyRobotSimulator::Initialize();
+	SocketServerConsole::Initialize();
 }
 
 bool RobotSimulator::Init(const char *rootDir)
@@ -63,6 +71,7 @@ bool RobotSimulator::Init(const char *rootDir)
 	Entity::RegisterComponent<DepthSensor>("DepthSensor");
 	Entity::RegisterComponent<DistanceSensor>("DistanceSensor");
 	Entity::RegisterComponent<ProximitySensor>("ProximitySensor");
+	Entity::RegisterComponent<IMUSensor>("IMUSensor");
 	Entity::RegisterComponent<IActionController>("ActionController");
 	Entity::RegisterComponent<Communicator>("Communicator");
 

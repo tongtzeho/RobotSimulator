@@ -13,8 +13,10 @@ public:
 	static void PyDel(_PyActionController *self);
 	static PyObject* PyStr(_PyActionController *self);
 	static PyObject* PyRepr(_PyActionController *self);
-	static PyObject* PyGetState(_PyActionController *self);
+	static PyObject* PyGetState(_PyActionController *self, PyObject *args);
+	static PyObject* PyGetStates(_PyActionController *self);
 	static PyObject* PySetState(_PyActionController *self, PyObject *args);
+	static PyObject* PySetStates(_PyActionController *self, PyObject *args);
 private:
 	static PyMemberDef PyDataMembers[];
 	static PyMethodDef PyMethodMembers[];

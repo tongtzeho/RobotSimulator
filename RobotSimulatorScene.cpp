@@ -43,6 +43,10 @@ void RobotSimulatorScene::Step(const float dt, void *const param)
 	}
 	actionSys.Action(dt);
 	CoolEngine::Instance()->GetPhysicsManager()->Step(dt);
+	for (size_t i = 0; i < imuSensorArray.Size(); ++i)
+	{
+		imuSensorArray[i]->Update(dt);
+	}
 	actionSys.SafetyVerification();
 }
 
@@ -63,6 +67,22 @@ void RobotSimulatorScene::PostRender(void *const param)
 		cameraSensorArray[i]->Sample();
 	}
 	state = ReadyToUpdate;
+}
+
+bool RobotSimulatorScene::AppendIMUSensor(IMUSensor *const imuSensor)
+{
+	assert(imuSensor != nullptr);
+	bool ret = imuSensorArray.Append(imuSensor);
+	assert(ret);
+	return ret;
+}
+
+bool RobotSimulatorScene::DeleteIMUSensor(IMUSensor *const imuSensor)
+{
+	assert(imuSensor != nullptr);
+	bool ret = imuSensorArray.UnstableErase(imuSensor);
+	assert(ret);
+	return ret;
 }
 
 bool RobotSimulatorScene::AppendCameraSensor(ICameraSensor *const cameraSensor)

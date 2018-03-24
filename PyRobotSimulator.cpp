@@ -4,6 +4,7 @@
 #include "PyCameraSensor.h"
 #include "PyDistanceSensor.h"
 #include "PyProximitySensor.h"
+#include "PyIMUSensor.h"
 #include "PyActionController.h"
 #include "PyCommunicator.h"
 #include "PyRobotSimulator.h"
@@ -108,6 +109,11 @@ void PyRobotSimulator::Initialize()
 	assert(ready >= 0);
 	Py_INCREF(const_cast<PyTypeObject*>(PyProximitySensor::GetPyClassInfo()));
 	PyModule_AddObject(simModule, "proximitySensor", (PyObject*)const_cast<PyTypeObject*>(PyProximitySensor::GetPyClassInfo()));
+
+	ready = PyType_Ready(const_cast<PyTypeObject*>(PyIMUSensor::GetPyClassInfo()));
+	assert(ready >= 0);
+	Py_INCREF(const_cast<PyTypeObject*>(PyIMUSensor::GetPyClassInfo()));
+	PyModule_AddObject(simModule, "imuSensor", (PyObject*)const_cast<PyTypeObject*>(PyIMUSensor::GetPyClassInfo()));
 
 	ready = PyType_Ready(const_cast<PyTypeObject*>(PyActionController::GetPyClassInfo()));
 	assert(ready >= 0);
