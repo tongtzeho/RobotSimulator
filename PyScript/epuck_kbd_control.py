@@ -1,5 +1,5 @@
 import coolengine as ce
-import robotsimulator as sim
+import epuck
 
 """
 EpuckName = "e-puck2_00001"
@@ -12,14 +12,16 @@ class epuck_kbd_control:
 		self.entity = entity
 	
 	def start(self, param = None):
-		self.actionController = sim.actionController(self.entity.getComponent("ActionController"))
+		self.epuck = epuck.epuck(self.entity)
 	
 	def step(self, dt, param = None):
-		state = 0
+		states = [0, 0]
 		if ce.isDown(38): # UpArrow
-			state += 1
+			states[0] = 3
+		elif ce.isDown(40): # DownArrow
+			states[0] = -3
 		if ce.isDown(37): # LeftArrow
-			state += 8
+			states[1] = -1.3
 		elif ce.isDown(39): # RightArrow
-			state += 12
-		self.actionController.setState(state)
+			states[1] = 1.3
+		self.epuck.actionController.setStates(states)

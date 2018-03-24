@@ -17,5 +17,3 @@ class safetyInfo:
 			for ue in unsafe:
 				content += ue.getName()+"\n"
 			self.text.setContent(content)
-
-			
