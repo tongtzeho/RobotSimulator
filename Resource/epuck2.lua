@@ -88,7 +88,7 @@ Entity_IRProx = {
 		--{ Config = "@epuck2.lua:Entity_Ray" }
 	},
 	Comp = {
-		{"ProximitySensor", "5"}
+		{"ProximitySensor", "8"}
 	}
 }
 
@@ -113,8 +113,9 @@ Entity = {
 		{"Renderer", "EpuckRenderer", "1 1 1050"},
 		{"Collider", "@epuck2.lua:Collider_OnGround"},
 		{"Rigidbody", "@epuck2.lua:Rigidbody"},
-		{"Renderer", "ColliderRenderer", "1 0 0 1"},
-		{"ActionController", "EpuckActionController", "3 1.6"},
+		--{"Renderer", "ColliderRenderer", "1 0 0 1"},
+		{"IMUSensor"},
 		{"Communicator"},
+		{"ActionController", "EpuckActionController", "15 2"},
 	}
 }
