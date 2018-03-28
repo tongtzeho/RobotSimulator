@@ -1,8 +1,10 @@
 #pragma once
 
+#include <map>
+
 #include "../Engine/CoolEngine.h"
 
-class Communicator : private std::queue<std::string>
+class Communicator : private std::multimap<double, std::string>
 {
 private:
 	const CE::IComponent *const component;
@@ -12,7 +14,7 @@ public:
 	~Communicator() = default;
 	void UpdatePosition();
 	void Send(const char *msg);
-	void Receive(const char *msg) { push(msg); }
+	void Receive(const char *msg, const double receiveTime) { insert(std::pair<double, std::string>(receiveTime, msg)); }
 	void Read(std::vector<std::string> &outMessages);
 	inline const CE::Vector3& GetPosition() const { return position; }
 	inline const CE::IComponent* GetComponent() const { return component; }

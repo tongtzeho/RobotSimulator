@@ -107,23 +107,19 @@ void CommunicationSystem::Send(Communicator *sender, const char *msg)
 					PyObject *item = PyList_GetItem(ret, i);
 					PyCommunicator *receiver;
 					const char *sendMsg;
-					if (!PyArg_ParseTuple(item, "Os", &receiver, &sendMsg))
+					double delay;
+					if (!PyArg_ParseTuple(item, "Osd", &receiver, &sendMsg, &delay))
 					{
 						continue;
 					}
-					receiver->communicator->Receive(sendMsg);
+					if (delay < 0)
+					{
+						delay = 0;
+					}
+					receiver->communicator->Receive(sendMsg, CoolEngine::Instance()->GetTime()+delay);
 				}
 				Py_XDECREF(ret);
 			}
 		}
 	}
-	/*
-	const float distance = 12.0f;
-	for (size_t i = 0; i < Size(); ++i)
-	{
-		if (sender != (*this)[i] && ((*this)[i]->GetPosition() - sender->GetPosition()).Square() <= distance*distance)
-		{
-			(*this)[i]->Receive(msg);
-		}
-	}*/
 }

@@ -23,11 +23,13 @@ void Communicator::Read(std::vector<std::string> &outMessages)
 	outMessages.clear();
 	if (!empty())
 	{
-		outMessages.reserve(size());
-		while (!empty())
+		std::multimap<double, std::string>::const_iterator iter = upper_bound(CoolEngine::Instance()->GetTime());
+		for (std::multimap<double, std::string>::const_iterator jter = begin(); jter != iter; )
 		{
-			outMessages.push_back(front());
-			pop();
+			outMessages.push_back(jter->second);
+			std::multimap<double, std::string>::const_iterator kter = jter;
+			++jter;
+			erase(kter);
 		}
 	}
 }
