@@ -1,8 +1,9 @@
 def send(sender, msg, comms):
-	distance = 10
+	distanceSq = 15*15
+	delay = 1
 	result = []
 	for comm in comms:
-		if comm != sender and (comm.getPosition()-sender.getPosition()).square() <= distance*distance:
-			result.append((comm, msg))
-	print result
+		if comm != sender and (comm.getPosition()-sender.getPosition()).square() <= distanceSq:
+			result.append((comm, msg, delay))
 	return result
+
