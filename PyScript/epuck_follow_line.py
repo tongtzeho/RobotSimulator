@@ -22,9 +22,11 @@ class epuck_follow_line:
 		self.entity = entity
 		self.randomThreshold = 0.85
 		self.following = True
-		self.minDist = 2
-		self.avoidanceOmega = 0.37
-		self.avoidanceVelocity = 2.1
+		self.minDist = 1.5
+		self.avoidanceOmega = 0.5
+		self.avoidanceVelocity = 1.5
+		self.avoidanceRadius = 7.3+self.minDist
+		self.avoidanceState = 0
 		
 	def start(self, param = None):
 		self.epuck = epuck.epuck(self.entity)
@@ -34,61 +36,60 @@ class epuck_follow_line:
 		pixels = self.epuck.rgbSensor.getData()
 		bottom = pixels[-1]
 		width = len(bottom)
-		left = 0
+		redLeft = 0
 		for i in range(int(width*0.2), int(width*0.4)):
-			left += bottom[i][0]
-		mid = 0
+			redLeft += bottom[i][0]
+		redMid = 0
 		for i in range(int(width*0.4), int(width*0.6)):
-			mid += bottom[i][0]
-		right = 0
+			redMid += bottom[i][0]
+		redRight = 0
 		for i in range(int(width*0.6), int(width*0.8)):
-			right += bottom[i][0]
-		sum = left+mid+right
-		if sum > 0 and random.random() > self.randomThreshold:
-			leftPossi = left/sum
-			midPossi = mid/sum
-			rightPossi = 1-leftPossi-midPossi
-			rand = random.random()
-			if rand <= leftPossi:
-				return [2, -1.4]
-			elif rand <= leftPossi+midPossi:
-				return [5, 0]
-			else:
-				return [2, 1.4]
+			redRight += bottom[i][0]
+		if redMid >= redLeft and redMid >= redRight:
+			return [5, 0]
+		elif redLeft >= redMid and redLeft >= redRight:
+			return [2, -1.4]
 		else:
-			if mid >= left and mid >= right:
-				return [5, 0]
-			elif left >= mid and left >= right:
-				return [2, -1.4]
-			else:
-				return [2, 1.4]
+			return [2, 1.4]
 	
-	def getStateInAviodance(self):
-		if (not self.epuck.ir0.getData()) and (not self.epuck.ir7.getData()):
+	def getStateInAviodance(self, dt):
+		if self.avoidanceState == 0:
+			if self.epuck.ir2.getData():
+				self.turnTime = 0
+				self.avoidanceState = 1
+			return [0, -self.avoidanceOmega]
+		elif self.avoidanceState == 1:
+			if self.epuck.ir2.getData():
+				self.turnTime += dt
+				return [0, -self.avoidanceOmega]
+			else:
+				self.turnTime /= 2
+				self.avoidanceState = 2
+				return [0, 0]
+		elif self.avoidanceState == 2:
+			self.turnTime -= dt
+			if self.turnTime <= 0:
+				self.avoidanceState = 3
+			return [0, self.avoidanceOmega]
+		elif self.avoidanceState == 3:
 			pixels = self.epuck.rgbSensor.getData()
 			bottom = pixels[-1]
 			width = len(bottom)
 			mid = bottom[int(width*0.5)]
-			if mid[0] > 0.8 and mid[1] < 0.3 and mid[2] < 0.3:
+			if mid[0] > 0.8 and (mid[1] > 0.8 or mid[2] < 0.2):
 				self.following = True
+				self.avoidanceState = 0
 				return self.getStateFromRGBSensor()
-		ir1Result = self.epuck.ir1.getData()
-		ir2Result = self.epuck.ir2.getData()
-		if not ir2Result:
-			return [0, -self.avoidanceOmega]
-		else:
-			if not ir1Result:
-				return [self.avoidanceVelocity, self.avoidanceOmega/2]
-			elif ir1Result:
-				return [self.avoidanceVelocity, -self.avoidanceOmega/2]
-	
+			else:
+				return [self.avoidanceVelocity, self.avoidanceVelocity/self.avoidanceRadius]
+				
 	def step(self, dt, param = None):
 		if self.following:
 			dist = self.epuck.tof.getData()
 			if dist != None and dist < self.minDist:
 				self.following = False
-				self.epuck.actionController.setStates(self.getStateInAviodance())
+				self.epuck.actionController.setStates(self.getStateInAviodance(dt))
 			else:
 				self.epuck.actionController.setStates(self.getStateFromRGBSensor())
 		else:
-			self.epuck.actionController.setStates(self.getStateInAviodance())
+			self.epuck.actionController.setStates(self.getStateInAviodance(dt))
