@@ -16,7 +16,7 @@ class epuck_follow_line_relay:
 	def __init__(self, entity, param = None):
 		self.entity = entity
 		self.isAwake = bool(int(param))
-		self.randomThreshold = 0.85
+		self.distThreshold = 5
 	
 	def start(self, param = None):
 		self.epuck = epuck.epuck(self.entity)
@@ -26,43 +26,32 @@ class epuck_follow_line_relay:
 		pixels = self.epuck.rgbSensor.getData()
 		bottom = pixels[-1]
 		width = len(bottom)
-		left = 0
+		redLeft = 0
 		for i in range(int(width*0.2), int(width*0.4)):
-			left += bottom[i][0]
-		mid = 0
+			redLeft += bottom[i][0]
+		redMid = 0
 		for i in range(int(width*0.4), int(width*0.6)):
-			mid += bottom[i][0]
-		right = 0
+			redMid += bottom[i][0]
+		redRight = 0
 		for i in range(int(width*0.6), int(width*0.8)):
-			right += bottom[i][0]
-		sum = left+mid+right
-		if sum > 0 and random.random() > self.randomThreshold:
-			leftPossi = left/sum
-			midPossi = mid/sum
-			rightPossi = 1-leftPossi-midPossi
-			rand = random.random()
-			if rand <= leftPossi:
-				return [2, -1.4, 0]
-			elif rand <= leftPossi+midPossi:
-				return [5, 0, 0]
-			else:
-				return [2, 1.4, 0]
+			redRight += bottom[i][0]
+		if redMid >= redLeft and redMid >= redRight:
+			return [5, 0]
+		elif redLeft >= redMid and redLeft >= redRight:
+			return [2, -1.4]
 		else:
-			if mid >= left and mid >= right:
-				return [5, 0, 0]
-			elif left >= mid and left >= right:
-				return [2, -1.4, 0]
-			else:
-				return [2, 1.4, 0]
+			return [2, 1.4]
 	
 	def step(self, dt, param = None):
 		if self.isAwake:
 			dist = self.epuck.tof.getData()
-			if dist != None and dist < 1.5:
+			if dist != None and dist < self.distThreshold:
 				self.isAwake = False
 				self.epuck.actionController.setStates([0, 0, 1])
 			else:
-				self.epuck.actionController.setStates(self.getStateFromRGBSensor())
+				states = self.getStateFromRGBSensor()
+				states.append(0)
+				self.epuck.actionController.setStates(states)
 		else:
 			self.epuck.actionController.setStates([0, 0, 0])
 			if len(self.epuck.comm.read()):
