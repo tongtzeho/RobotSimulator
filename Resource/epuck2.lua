@@ -95,6 +95,7 @@ Entity_IRProx = {
 Entity = {
 	Child = {
 		{ Config = "@epuck2.lua:Entity_Wheel", Name = "Epuck2Wheel", T = "0 2 0" },
+		{ Config = "@epuck2_qrcode.lua:Entity", Name = "Epuck2QRCode", S = "2.8 1.4 2.8", T = "0 4.5 -0.35" },
 		{ Config = "@epuck2.lua:Entity_Camera", Name = "Epuck2Camera", T = "0 2.78 3.475"},
 		{ Config = "@epuck2.lua:Entity_ToFDist", Name = "Epuck2ToF", T = "0 4 3.63"}, -- Front
 		{ Config = "@epuck2.lua:Entity_IRProx", Name = "Epuck2IR0", T = "1 3.3 3", Q = "0 0.149832 0 0.988712"}, -- Front Right

@@ -39,9 +39,20 @@ Entity_FreeCamera = {
 	}
 }
 
+KinectIdentifier = "1 1 640 480 5 1000 0.751"
+
+Entity_Kinect = {
+	Comp = {
+		{"Camera", KinectIdentifier, "0 1 0 1 0 0 0 0.4 0 0"},
+		{"RGBSensor", KinectIdentifier, "30 1"},
+		{"DepthSensor", KinectIdentifier, "30 1 200"}
+	}
+}
+
 Entity_GlobalSystem = {
 	Child = {
-		{ Config = "@simscene.lua:Entity_FreeCamera", Name = "FreeCamera", Q = "0.58 0 0 0.81", T = "0 54 -32" }
+		{ Config = "@simscene.lua:Entity_FreeCamera", Name = "FreeCamera", Q = "0.58 0 0 0.81", T = "0 54 -32" },
+		{ Config = "@simscene.lua:Entity_Kinect", Name = "Kinect", Q = "1 0 0 1", T = "0 130 0" }
 	},
 	Comp = {
 		{ "Light", "@simscene.lua:Light_Global", "1" },
@@ -49,7 +60,8 @@ Entity_GlobalSystem = {
 		{ "Script", "fpsInfo" },
 		{ "Text", "Safety", "@simscene.lua:Text_Safety" },
 		{ "Script", "safetyInfo" },
-		{ "Script", "switchOnGUICamera" }
+		--{ "Script", "switchOnGUICamera" }
+		{ "Script", "add_qrcode" }
 	}
 }
 
