@@ -117,6 +117,6 @@ Entity = {
 		--{"Renderer", "ColliderRenderer", "1 0 0 1"},
 		{"IMUSensor"},
 		{"Communicator"},
-		{"ActionController", "EpuckActionController", "15 2"},
+		{"ActionController", "EpuckActionController", "50 2"},
 	}
 }
