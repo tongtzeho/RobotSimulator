@@ -84,6 +84,19 @@ extern "C"
 		return pyList;
 	}
 
+	PyObject* _PyCameraSensor::PyGetRemoteData(_PyCameraSensor *self, PyObject *args)
+	{
+		unsigned soc;
+		if (!PyArg_ParseTuple(args, "I", &soc))
+		{
+			return NULL;
+		}
+		SOCKET clientSocket = soc;
+		self->cameraSensor->SendDataToSocketClient(soc);
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
 	PyObject* _PyCameraSensor::PySaveBMP(_PyCameraSensor *self, PyObject *args)
 	{
 		const char *str;
@@ -112,6 +125,7 @@ PyMethodDef _PyCameraSensor::PyMethodMembers[] = {
 	{ "isEnabled", (PyCFunction)PyIsEnabled, METH_NOARGS },
 	{ "setEnabled", (PyCFunction)PySetEnabled, METH_VARARGS },
 	{ "getData", (PyCFunction)PyGetData, METH_NOARGS },
+	{ "getRemoteData", (PyCFunction)PyGetRemoteData, METH_VARARGS },
 	{ "saveBMP", (PyCFunction)PySaveBMP, METH_VARARGS },
 	{ NULL, NULL }
 };

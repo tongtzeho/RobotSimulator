@@ -16,6 +16,7 @@ public:
 	static PyObject* PyIsEnabled(_PyCameraSensor *self);
 	static PyObject* PySetEnabled(_PyCameraSensor *self, PyObject *args);
 	static PyObject* PyGetData(_PyCameraSensor *self);
+	static PyObject* PyGetRemoteData(_PyCameraSensor *self, PyObject *args);
 	static PyObject* PySaveBMP(_PyCameraSensor *self, PyObject *args);
 private:
 	static PyMemberDef PyDataMembers[];

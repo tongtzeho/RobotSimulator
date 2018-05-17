@@ -18,4 +18,7 @@ private:
 public:
 	static void Initialize();
 	static void Destroy();
+#ifdef PY_CONSOLE
+	static void SendMsgToClient(SOCKET clientSocket, const char *data, unsigned size);
+#endif
 };

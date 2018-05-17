@@ -55,13 +55,16 @@ DWORD WINAPI SocketServerConsole::SocketServerThread(LPVOID param)
 		if ((clientsoc = accept(serversoc, (SOCKADDR*)&clientaddr, &len)) > 0)
 		{
 			printf("New Client\n");
-			char buf_msg[MaxBufLen];
+			char buf_msg[MaxBufLen] = { 0 };
 			int ret_val = 0;
+			memcpy(buf_msg, &clientsoc, sizeof(SOCKET));
+			printf("%u\n", clientsoc);
+			::send(clientsoc, buf_msg, sizeof(SOCKET), 0);
 			while (true)
 			{
 				memset(buf_msg, 0, MaxBufLen);
 				ret_val = ::recv(clientsoc, buf_msg, MaxBufLen, 0);
-				if (ret_val >= 0)
+				if (ret_val > 0)
 				{
 					printf("From Client: %s\n", buf_msg);
 					CE::Console::AddCmdToQueue(buf_msg);
@@ -77,6 +80,11 @@ DWORD WINAPI SocketServerConsole::SocketServerThread(LPVOID param)
 		}
 	}
 	return 0;
+}
+
+void SocketServerConsole::SendMsgToClient(SOCKET clientSocket, const char *data, unsigned size)
+{
+	::send(clientSocket, data, size, 0);
 }
 #endif // PY_CONSOLE
 

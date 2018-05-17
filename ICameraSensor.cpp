@@ -1,4 +1,5 @@
 #include "ICameraSensor.h"
+#include "SocketServerConsole.h"
 
 using namespace CE;
 
@@ -23,6 +24,10 @@ ICameraSensor::~ICameraSensor()
 	if (textureData)
 	{
 		delete[]textureData;
+	}
+	if (sendData)
+	{
+		delete[]sendData;
 	}
 }
 
@@ -59,6 +64,11 @@ bool ICameraSensor::Sample()
 		}
 	}
 	return false;
+}
+
+void ICameraSensor::SendDataToSocketClient(SOCKET clientSocket)
+{
+	SocketServerConsole::SendMsgToClient(clientSocket, sendData, 8 + height*width * 4);
 }
 
 bool ICameraSensor::SaveBMP(const char *bmpFile) const

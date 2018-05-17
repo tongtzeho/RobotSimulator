@@ -9,5 +9,6 @@ private:
 public:
 	RGBSensor(CE::IComponent *comp, const char *cameraIdentifier, const char *param);
 	virtual ~RGBSensor() = default;
+	virtual void SendDataToSocketClient(SOCKET clientSocket);
 	virtual const char *GetSensorType() const { return "RGBSensor"; }
 };

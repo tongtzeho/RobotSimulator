@@ -9,7 +9,8 @@ private:
 protected:
 	ID3D11Texture2D *textureSrc;
 	ID3D11Texture2D *textureDest;
-	unsigned char *textureData;
+	unsigned char *textureData; 
+	char *sendData;
 	unsigned height;
 	unsigned width;
 	unsigned channel; // RGBSensor有4个Channel，DepthSensor有1个Channel
@@ -35,5 +36,6 @@ public:
 		outChannel = channel;
 		return reinterpret_cast<const float*>(textureData);
 	}
+	virtual void SendDataToSocketClient(SOCKET clientSocket);
 	bool SaveBMP(const char *bmpFile) const; // 把当前的textureData保存为bmp图片（调试使用），保存规则由GetBMPPixels定义
 };
