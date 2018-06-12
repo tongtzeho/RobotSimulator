@@ -61,12 +61,11 @@ void RobotSimulatorScene::PreRender(void *const param)
 
 void RobotSimulatorScene::PostRender(void *const param)
 {
-	assert(state == ReadyToPostRender);
 	for (size_t i = 0; i < cameraSensorArray.Size(); ++i)
 	{
 		cameraSensorArray[i]->Sample();
 	}
-	state = ReadyToUpdate;
+	Scene::PostRender(param);
 }
 
 bool RobotSimulatorScene::AppendIMUSensor(IMUSensor *const imuSensor)
