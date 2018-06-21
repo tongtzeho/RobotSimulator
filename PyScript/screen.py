@@ -18,4 +18,4 @@ class screen:
 				x, z = posW.x - dirW.x * posW.y / dirW.y, posW.z - dirW.z * posW.y / dirW.y
 				if x >= -self.entityWidth and x <= self.entityWidth and z >= -self.entityHeight and z <= self.entityHeight:
 					x, z = int((x + self.entityWidth) / (self.entityWidth * 2) * self.width), int((1 - (z + self.entityHeight) / (self.entityHeight * 2)) * self.height)
-					self.pixels[x+z*self.width] = 0xFF0000FF
+					self.pixels[x+z*self.width] = 0xFF00FF00 # ARGB
